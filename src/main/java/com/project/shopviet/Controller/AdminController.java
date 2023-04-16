@@ -1,5 +1,7 @@
 package com.project.shopviet.Controller;
 
+import com.project.shopviet.DTO.OrderItemDto;
+import com.project.shopviet.DTO.OrderUserDto;
 import com.project.shopviet.Model.*;
 import com.project.shopviet.Service.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +25,20 @@ public class AdminController {
     @Autowired
     UserService userService;
     @Autowired
-    ProductService productService;
+    OrderService orderService;
     @Autowired
     RoleService roleService;
+    @Autowired
+    OrderItemService orderItemService;
+    @GetMapping("/allOrder")
+    public List<OrderUserDto> getAllOrder(){
+        return orderService.getAllOrder();
+    }
+    @GetMapping("/allOrderItem")
+    public List<OrderItemDto> getAllOrderItem(){
+        return orderItemService.getAllOrderItem();
+    }
+
     @PostMapping("/addBrand")
     public Brand addBrand(@RequestBody Brand brand){
         return brandService.addBrand(brand);
@@ -53,7 +66,7 @@ public class AdminController {
     }
 
 
-    @GetMapping("/alll/{role}")
+    @GetMapping("/all/{role}")
     public List<User> getUserByRolee(@PathVariable String role){
         Role roleUser=roleService.findRoleByName(role);
         return userService.findUserByRole(roleUser);
@@ -65,13 +78,47 @@ public class AdminController {
         roles.add(roleService.findRoleByName(role2));
         return userService.findByRolesIn(roles);
     }
-    @GetMapping("getrole/{id}")
-    public Set<Role> getRole(@PathVariable int id){
-        return userService.getRoleForUser(id);
+    @GetMapping("/allUser")
+    public List<User> getAllUser(){
+        return userService.getAllUser();
     }
     @GetMapping("/set/{user_id}/role/{role_id}")
     public String setRole(@PathVariable int user_id,@PathVariable int role_id){
         userService.addRoleToUser(user_id,role_id);
         return "thanh cong";
+    }
+
+    @PostMapping("/add/role")
+    public Role addRole(@RequestBody Role role){
+        return roleService.addRole(role);
+    }
+    @GetMapping("/all/role")
+    public List<Role> getAllRole(){
+        return roleService.getAllRole();
+    }
+
+    @GetMapping("/approve/user/{id}")
+    public void approveSellerOrShipper(@PathVariable int id){
+        userService.approveSellerOrShipper(id);
+    }
+    @GetMapping("/block/user/{id}")
+    public void blockSellerOrShipper(@PathVariable int id){
+        userService.blockSellerOrShipper(id);
+    }
+    @GetMapping("/unblock/user/{id}")
+    public void unBlockSellerOrShipper(@PathVariable int id){
+        userService.unBlockSellerOrShipper(id);
+    }
+    @GetMapping("/all/approve")
+    public List<User> getAllUserApproveSellerOrShipper(){
+        return userService.getAllUserApprove();
+    }
+    @GetMapping("/all/block")
+    public List<User> getAllUserBlock(){
+        return userService.getAllUserBlock();
+    }
+    @GetMapping("/profile")
+    User getProfileAdmin(){
+        return userService.getProfile();
     }
 }

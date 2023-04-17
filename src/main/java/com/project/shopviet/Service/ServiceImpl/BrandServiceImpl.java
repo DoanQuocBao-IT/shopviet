@@ -1,14 +1,16 @@
 package com.project.shopviet.Service.ServiceImpl;
 
+import com.project.shopviet.DTO.BrandDto;
 import com.project.shopviet.Model.Brand;
 import com.project.shopviet.Repository.BrandRepository;
 import com.project.shopviet.Service.BrandService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class BrandServiceImpl implements BrandService {
@@ -52,22 +54,13 @@ public class BrandServiceImpl implements BrandService {
             return null;
         }
     }
-    @Transactional
-    @Override
-    public void updateBrandForCategory(int category_id, int brand_id) {
-        try {
-            if(isExistById(brand_id)){
-                brandRepository.updateBrandForCategory(category_id,brand_id);
-            }
-        }catch (IllegalArgumentException e){
-            System.out.println("Update Brand Error: "+e.getMessage());
-        }
-    }
 
     @Override
-    public List<Brand> getAllBrand() {
+    public List<BrandDto> getAllBrand() {
         try{
-            return (List<Brand>) brandRepository.findAll();
+            List<Brand> brands=brandRepository.findAll();
+            ModelMapper modelMapper = new ModelMapper(); // khởi tạo đối tượng modelMapper
+            return brands.stream().map(brand -> modelMapper.map(brand,BrandDto.class)).collect(Collectors.toList());
         }catch (IllegalArgumentException e){
             System.out.println("Get All Brand Error: "+e.getMessage());
             return null;
@@ -75,9 +68,11 @@ public class BrandServiceImpl implements BrandService {
     }
 
     @Override
-    public Optional<Brand> getBrandByCategoryId(int id) {
+    public List<BrandDto> getBrandByCategoryId(int id) {
         try{
-            return (Optional<Brand>) brandRepository.getBrandByCategoryId(id);
+            List<Brand> brands=brandRepository.getBrandByCategoryId(id);
+            ModelMapper modelMapper = new ModelMapper(); // khởi tạo đối tượng modelMapper
+            return brands.stream().map(brand -> modelMapper.map(brand,BrandDto.class)).collect(Collectors.toList());
         }catch (IllegalArgumentException e){
             System.out.println("Get All Brand Error: "+e.getMessage());
             return null;

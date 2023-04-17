@@ -1,6 +1,7 @@
 package com.project.shopviet.Model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,8 +24,10 @@ public class Brand {
     private String name;
     @Column(name = "image")
     private String image;
-    @ManyToOne(cascade = CascadeType.ALL)
+
+    @ManyToOne
     @JoinColumn(name = "category_id")
+    @JsonIgnoreProperties("brands")
     private Category category;
 
     @OneToMany( cascade = CascadeType.ALL)

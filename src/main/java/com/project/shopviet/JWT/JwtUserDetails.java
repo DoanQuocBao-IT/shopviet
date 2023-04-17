@@ -2,8 +2,7 @@ package com.project.shopviet.JWT;
 
 import com.project.shopviet.Model.Role;
 import com.project.shopviet.Model.User;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

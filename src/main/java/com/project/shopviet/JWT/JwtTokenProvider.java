@@ -3,14 +3,10 @@ package com.project.shopviet.JWT;
 import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
 
-import org.hibernate.boot.model.naming.IllegalIdentifierException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 @Slf4j
@@ -60,5 +56,16 @@ public class JwtTokenProvider {
         Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
         List<String> roles = (List<String>) claims.get("role");
         return roles;
+    }
+    private Set<String> blacklistedTokens = new HashSet<>();
+
+    public void updateTokenValidity(String token, long validitySeconds) {
+        if (validitySeconds == 0) {
+            // Thêm token vào danh sách đen
+            blacklistedTokens.add(token);
+        } else {
+            // Xóa token khỏi danh sách đen
+            blacklistedTokens.remove(token);
+        }
     }
 }

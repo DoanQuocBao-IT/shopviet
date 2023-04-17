@@ -1,6 +1,5 @@
 package com.project.shopviet.DTO;
 
-import com.project.shopviet.Model.User;
 import lombok.Getter;
 import lombok.Setter;
 

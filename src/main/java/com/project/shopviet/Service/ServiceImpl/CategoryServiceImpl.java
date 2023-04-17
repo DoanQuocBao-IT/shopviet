@@ -1,13 +1,16 @@
 package com.project.shopviet.Service.ServiceImpl;
 
+import com.project.shopviet.DTO.CategoryDto;
 import com.project.shopviet.Model.Category;
 import com.project.shopviet.Repository.CategoryRepository;
 import com.project.shopviet.Service.CategoryService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
@@ -53,9 +56,11 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public List<Category> getAllCategory() {
+    public List<CategoryDto> getAllCategory() {
         try{
-            return (List<Category>) categoryRepository.findAll();
+            List<Category> categories=categoryRepository.findAll();
+            ModelMapper modelMapper=new ModelMapper();
+            return categories.stream().map(category -> modelMapper.map(category,CategoryDto.class)).collect(Collectors.toList());
         }catch (IllegalArgumentException e){
             System.out.println("Get All Category Error: "+e.getMessage());
             return null;

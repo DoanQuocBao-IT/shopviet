@@ -5,13 +5,10 @@ import com.project.shopviet.DTO.OrderUserDto;
 import com.project.shopviet.Model.*;
 import com.project.shopviet.Service.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.security.RolesAllowed;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 @RestController

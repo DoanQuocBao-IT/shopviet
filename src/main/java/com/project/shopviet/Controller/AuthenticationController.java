@@ -5,7 +5,6 @@ import com.project.shopviet.JWT.JwtRequest;
 import com.project.shopviet.JWT.JwtResponse;
 import com.project.shopviet.JWT.JwtTokenProvider;
 import com.project.shopviet.JWT.UserDetailsServiceImpl;
-import com.project.shopviet.Model.User;
 import com.project.shopviet.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -48,5 +47,12 @@ public class AuthenticationController {
             return ResponseEntity.ok(new JwtResponse(jwt));
         }
         return ResponseEntity.ok(new JwtResponse(null));
+    }
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(@RequestHeader("Authorization") String token) {
+        String username = jwtTokenProvider.getUsernameFromToken(token);
+        // Thêm token vào danh sách đen hoặc xóa nó khỏi cơ sở dữ liệu
+        jwtTokenProvider.updateTokenValidity(token, 0);
+        return ResponseEntity.ok().build();
     }
 }

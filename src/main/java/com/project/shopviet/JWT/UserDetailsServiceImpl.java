@@ -3,6 +3,7 @@ package com.project.shopviet.JWT;
 import com.project.shopviet.Model.User;
 import com.project.shopviet.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -18,6 +19,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<User> user=userRepository.findUserByUsername(username);
         user.orElseThrow(() -> new RuntimeException("User not found"));
+        if (!user.get().isApproved() || user.get().isLocked()) {
+            throw new DisabledException("Your account has not been approved yet");
+        }
         return new JwtUserDetails(user.get());
     }
 }

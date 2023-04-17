@@ -1,22 +1,23 @@
 package com.project.shopviet.Service.ServiceImpl;
 
 import com.project.shopviet.DTO.RegisterDto;
-import com.project.shopviet.Model.Product;
+import com.project.shopviet.DTO.UserSellerDto;
 import com.project.shopviet.Model.Role;
 import com.project.shopviet.Model.User;
 import com.project.shopviet.Repository.RoleRepository;
 import com.project.shopviet.Repository.UserRepository;
 import com.project.shopviet.Service.UserService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -50,6 +51,13 @@ public class UserServiceImpl implements UserService {
             user.setPhone(registerDto.getPhone());
             user.setEmail(registerDto.getEmail());
             user.addRole(role);
+            user.setLocked(false);
+            if (registerDto.getRoleName().equals("buyer")){
+                user.setApproved(true);
+
+            }else {
+                user.setApproved(false);
+            }
             userRepository.save(user);
             return true;
         }catch (IllegalArgumentException e){
@@ -126,6 +134,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserSellerDto getUserById(int id) {
+        User users=userRepository.findById(id).get();
+        ModelMapper modelMapper=new ModelMapper();
+        return modelMapper.map(users,UserSellerDto.class);
+    }
+
+    @Override
     public List<User> getAllUser() {
         try{
             return (List<User>) userRepository.findAll();
@@ -153,5 +168,57 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean isExistById(int id) {
         return userRepository.existsById(id);
+    }
+
+    @Override
+    public void approveSellerOrShipper(int id) {
+        Optional<User> userOptional = userRepository.findById(id);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            user.setApproved(true);
+            userRepository.save(user);
+        } else {
+            throw new RuntimeException("User not found");
+        }
+    }
+
+    @Override
+    public void blockSellerOrShipper(int id) {
+        Optional<User> userOptional = userRepository.findById(id);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            user.setLocked(true);
+            userRepository.save(user);
+        } else {
+            throw new RuntimeException("User not found");
+        }
+    }
+
+    @Override
+    public void unBlockSellerOrShipper(int id) {
+        Optional<User> userOptional = userRepository.findById(id);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            user.setLocked(false);
+            userRepository.save(user);
+        } else {
+            throw new RuntimeException("User not found");
+        }
+    }
+
+    @Override
+    public List<User> getAllUserApprove() {
+        return userRepository.findByApprovedFalse();
+    }
+
+    @Override
+    public List<User> getAllUserBlock() {
+        return userRepository.findByLockedTrue();
+    }
+
+    @Override
+    public User getProfile() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return userRepository.findUserByName(authentication.getName());
     }
 }

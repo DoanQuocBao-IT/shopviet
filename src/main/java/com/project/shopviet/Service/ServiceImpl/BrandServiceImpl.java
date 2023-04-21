@@ -1,6 +1,7 @@
 package com.project.shopviet.Service.ServiceImpl;
 
 import com.project.shopviet.DTO.BrandDto;
+import com.project.shopviet.DTO.BrandProductDto;
 import com.project.shopviet.Model.Brand;
 import com.project.shopviet.Repository.BrandRepository;
 import com.project.shopviet.Service.BrandService;
@@ -65,6 +66,13 @@ public class BrandServiceImpl implements BrandService {
             System.out.println("Get All Brand Error: "+e.getMessage());
             return null;
         }
+    }
+
+    @Override
+    public List<BrandProductDto> getAllBrandProduct() {
+        List<Brand> brands=brandRepository.findAll();
+        ModelMapper modelMapper=new ModelMapper();
+        return brands.stream().map(brand -> modelMapper.map(brand,BrandProductDto.class)).collect(Collectors.toList());
     }
 
     @Override

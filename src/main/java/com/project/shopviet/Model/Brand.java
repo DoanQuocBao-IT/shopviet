@@ -30,8 +30,9 @@ public class Brand {
     @JsonIgnoreProperties("brands")
     private Category category;
 
+
     @OneToMany( cascade = CascadeType.ALL)
-    @JoinTable
-    @JsonIgnore
+    @JoinColumn(name = "brand_id")
+    @JsonIgnoreProperties("brand")
     private List<Product> products;
 }

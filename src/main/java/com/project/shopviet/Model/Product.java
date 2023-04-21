@@ -26,9 +26,11 @@ public class Product {
     private int inventory;
     private String description;
     private String image;
-
     @ManyToOne
+    @JoinColumn(name = "brand_id")
+    @JsonIgnoreProperties("products")
     private Brand brand;
+
     @ManyToOne
     private User userSeller;
     private Date createdAt;

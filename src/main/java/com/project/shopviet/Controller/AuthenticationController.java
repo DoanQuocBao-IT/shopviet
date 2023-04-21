@@ -5,6 +5,9 @@ import com.project.shopviet.JWT.JwtRequest;
 import com.project.shopviet.JWT.JwtResponse;
 import com.project.shopviet.JWT.JwtTokenProvider;
 import com.project.shopviet.JWT.UserDetailsServiceImpl;
+import com.project.shopviet.Repository.UserRepository;
+import com.project.shopviet.Service.EmailSenderService;
+import com.project.shopviet.Service.PasswordResetService;
 import com.project.shopviet.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -26,12 +29,19 @@ public class AuthenticationController {
     private JwtTokenProvider jwtTokenProvider;
     @Autowired
     UserService userService;
+    @Autowired
+    EmailSenderService emailSenderService;
+    @Autowired
+    PasswordResetService passwordResetService;
+    @Autowired
+    private UserRepository userRepository;
+
     @PostMapping("/login")
     public ResponseEntity<JwtResponse> loginUser(@RequestBody JwtRequest jwtRequest) throws Exception{
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(jwtRequest.getUsername(),jwtRequest.getPassword()));
         }catch (BadCredentialsException e){
-            throw new Exception("Incorrect username or password");
+            throw new IllegalArgumentException("Incorrect username or password");
         }
         final UserDetails userDetails= userDetailsService.loadUserByUsername(jwtRequest.getUsername());
         final String jwt = jwtTokenProvider.generateToken(userDetails);
@@ -54,5 +64,13 @@ public class AuthenticationController {
         // Thêm token vào danh sách đen hoặc xóa nó khỏi cơ sở dữ liệu
         jwtTokenProvider.updateTokenValidity(token, 0);
         return ResponseEntity.ok().build();
+    }
+    @PostMapping("/forgot-password")
+    public void forgotPassword(@RequestBody String email) {
+        passwordResetService.sendPasswordResetMail(email);
+    }
+    @PostMapping("/reset-password")
+    public void resetPassword(@RequestParam String token,@RequestBody String password){
+        passwordResetService.resetPassword(token, password);
     }
 }

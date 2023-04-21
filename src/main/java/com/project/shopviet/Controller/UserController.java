@@ -1,12 +1,9 @@
 package com.project.shopviet.Controller;
 
 import com.project.shopviet.DTO.*;
-import com.project.shopviet.Model.Product;
-import com.project.shopviet.Service.BrandService;
-import com.project.shopviet.Service.CategoryService;
-import com.project.shopviet.Service.ProductService;
-import com.project.shopviet.Service.UserService;
+import com.project.shopviet.Service.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,6 +22,10 @@ public class UserController {
     @GetMapping("/allBrand")
     public List<BrandDto> getAllBrand(){
         return brandService.getAllBrand();
+    }
+    @GetMapping("/allBrandProduct")
+    public List<BrandProductDto> getAllBrandProduct(){
+        return brandService.getAllBrandProduct();
     }
     @GetMapping("/brand/cat{category_id}")
     public List<BrandDto> getAllBrandForCategoryId(@PathVariable int category_id){

@@ -6,6 +6,7 @@ import com.project.shopviet.Model.Role;
 import com.project.shopviet.Model.User;
 import com.project.shopviet.Repository.RoleRepository;
 import com.project.shopviet.Repository.UserRepository;
+import com.project.shopviet.Service.EmailSenderService;
 import com.project.shopviet.Service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,8 @@ public class UserServiceImpl implements UserService {
     private RoleRepository roleRepository;
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
-
+    @Autowired
+    private EmailSenderService emailSenderService;
 
     @Transactional
     public void addRoleToUser(int userId, int roleId) {
@@ -176,6 +178,7 @@ public class UserServiceImpl implements UserService {
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             user.setApproved(true);
+            emailSenderService.sendEmailActive(user.getEmail(),"Thông báo xác thực tài khoản ShopViet thành công!!","Chúng tôi rẩt vui khi trở thành đối tác của bạn");
             userRepository.save(user);
         } else {
             throw new RuntimeException("User not found");

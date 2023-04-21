@@ -1,10 +1,13 @@
 package com.project.shopviet.Controller;
 
+import com.project.shopviet.DTO.MessageDto;
 import com.project.shopviet.DTO.OrderItemDto;
 import com.project.shopviet.DTO.OrderUserDto;
+import com.project.shopviet.DTO.RequestMessage;
 import com.project.shopviet.Model.*;
 import com.project.shopviet.Service.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashSet;
@@ -27,6 +30,9 @@ public class AdminController {
     RoleService roleService;
     @Autowired
     OrderItemService orderItemService;
+    @Autowired
+    MessageService messageService;
+
     @GetMapping("/allOrder")
     public List<OrderUserDto> getAllOrder(){
         return orderService.getAllOrder();
@@ -117,5 +123,14 @@ public class AdminController {
     @GetMapping("/profile")
     User getProfileAdmin(){
         return userService.getProfile();
+    }
+    @PostMapping("/message/user/{receiver_id}")
+    Messages sendMessage(@RequestBody Messages messages,@PathVariable int receiver_id){
+        return messageService.sendMessage(messages,receiver_id);
+    }
+    @GetMapping("/message/user/{receiver_id}")
+    List<MessageDto> getAllMessage(@PathVariable int receiver_id)
+    {
+        return messageService.findBySenderAndReceiverOrderByCreateAtAsc(receiver_id);
     }
 }

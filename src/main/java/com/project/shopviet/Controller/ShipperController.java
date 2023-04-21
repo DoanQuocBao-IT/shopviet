@@ -1,7 +1,10 @@
 package com.project.shopviet.Controller;
 
+import com.project.shopviet.DTO.MessageDto;
+import com.project.shopviet.Model.Messages;
 import com.project.shopviet.Model.OrderItem;
 import com.project.shopviet.Model.User;
+import com.project.shopviet.Service.MessageService;
 import com.project.shopviet.Service.OrderItemService;
 import com.project.shopviet.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +20,8 @@ public class ShipperController {
     UserService userService;
     @Autowired
     OrderItemService orderItemService;
+    @Autowired
+    MessageService messageService;
 
     @GetMapping("/allorder/approved")
     List<OrderItem> getAllOrderApproved(){
@@ -52,5 +57,14 @@ public class ShipperController {
     @GetMapping("/profile")
     User getProfileShipper(){
         return userService.getProfile();
+    }
+    @PostMapping("/message/user/{receiver_id}")
+    Messages sendMessage(@RequestBody Messages messages,@PathVariable int receiver_id){
+        return messageService.sendMessage(messages,receiver_id);
+    }
+    @GetMapping("/message/user/{receiver_id}")
+    List<MessageDto> getAllMessage(@PathVariable int receiver_id)
+    {
+        return messageService.findBySenderAndReceiverOrderByCreateAtAsc(receiver_id);
     }
 }

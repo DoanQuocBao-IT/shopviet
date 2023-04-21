@@ -1,5 +1,6 @@
 package com.project.shopviet.Controller;
 
+import com.project.shopviet.DTO.MessageDto;
 import com.project.shopviet.DTO.OrderItemDto;
 import com.project.shopviet.Model.*;
 import com.project.shopviet.Service.*;
@@ -23,7 +24,8 @@ public class SellerController {
     FollowService followService;
     @Autowired
     UserService userService;
-
+    @Autowired
+    MessageService messageService;
 
     @PostMapping("/addProd")
     public Product addProduct(@RequestBody Product product){
@@ -71,5 +73,15 @@ public class SellerController {
     @GetMapping("/profile")
     User getProfileShipper(){
         return userService.getProfile();
+    }
+
+    @PostMapping("/message/user/{receiver_id}")
+    Messages sendMessage(@RequestBody Messages messages,@PathVariable int receiver_id){
+        return messageService.sendMessage(messages,receiver_id);
+    }
+    @GetMapping("/message/user/{receiver_id}")
+    List<MessageDto> getAllMessage(@PathVariable int receiver_id)
+    {
+        return messageService.findBySenderAndReceiverOrderByCreateAtAsc(receiver_id);
     }
 }

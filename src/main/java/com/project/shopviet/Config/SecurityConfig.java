@@ -13,7 +13,16 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.access.channel.ChannelProcessingFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.stereotype.Service;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 @Configuration
 @EnableWebSecurity
@@ -32,6 +41,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable()
                 .authorizeRequests()
+                .antMatchers("/v2/api-docs").permitAll()
+                .antMatchers("/configuration/ui").permitAll()
+                .antMatchers("/swagger-resources/**").permitAll()
+                .antMatchers("/configuration/security").permitAll()
+                .antMatchers("/swagger-ui.html").permitAll()
+                .antMatchers("/swagger-ui/*").permitAll()
+                .antMatchers("/webjars/**").permitAll()
+                .antMatchers("/v2/**").permitAll()
+
                 .antMatchers("/api/auth/**").permitAll()
                 .antMatchers("/api/shopviet/**").permitAll()
                 .antMatchers("/api/admin/**").hasAuthority("admin")
@@ -44,8 +62,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         http.headers().frameOptions().sameOrigin();
+        http.addFilterBefore(corsFilter(), ChannelProcessingFilter.class);
     }
 
+    private OncePerRequestFilter corsFilter() {
+        return new OncePerRequestFilter() {
+            @Override
+            protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+                response.addHeader("Access-Control-Allow-Origin", "*");
+                response.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+                response.addHeader("Access-Control-Allow-Headers", "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
+                response.addHeader("Access-Control-Max-Age", "3600");
+                filterChain.doFilter(request, response);
+            }
+        };
+    }
     @Bean
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {

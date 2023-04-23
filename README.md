@@ -123,13 +123,118 @@ JWT will add to Back-List but logout should set up in front-end
 
 <H1> Admin controller
 
+<H2> - Function get admin
+
+![image](https://user-images.githubusercontent.com/85630559/233852046-672ea2e0-e77c-477c-80d9-4f62486a5cdd.png)
+<H2> - Function get all sellers
+
+![image](https://user-images.githubusercontent.com/85630559/233852121-5d2b9a3f-ffb8-491d-aaff-56cd7d1ff5af.png)
+<H2> - Function get all buyers
+
+![image](https://user-images.githubusercontent.com/85630559/233852173-a16dc8f8-e74e-4422-88af-26fa5f0bc020.png)
+<H2> - Function get all shippers
+
+![image](https://user-images.githubusercontent.com/85630559/233852216-f82193fe-b549-481c-b429-3967130701a1.png)
+<H2> - Function get all sellers and shippers
+
+![image](https://user-images.githubusercontent.com/85630559/233852289-5eaa0aa9-bf94-4e1c-af9f-829fa0bbb93e.png)
+<H2> - Function get all users
+
+![image](https://user-images.githubusercontent.com/85630559/233852361-f584adff-e9b0-48d9-9a10-49793db72687.png)
+<H2> - Function add new category
+
+![image](https://user-images.githubusercontent.com/85630559/233852469-26c326f2-5aa4-4ec1-a776-188095b2e427.png)
+<H2> - Function update category
+
+![image](https://user-images.githubusercontent.com/85630559/233852590-1cfc44a7-6751-4c99-b770-ba84c3cc23ad.png)
+<H2> - Function delete category
+
+![image](https://user-images.githubusercontent.com/85630559/233852613-1b85ec21-f28c-4945-8ce8-2ee219cf4c5e.png)
+<H2> - Function add new brand
+
+![image](https://user-images.githubusercontent.com/85630559/233852718-12a550ca-9701-4593-b46d-5ca692653baf.png)
+<H2> - Function update brand
+
+![image](https://user-images.githubusercontent.com/85630559/233852931-38bde0e9-ff6e-4db2-b5df-1e35772fe964.png)
+<H2> - Function delete brand
+
+![image](https://user-images.githubusercontent.com/85630559/233852983-1247df2e-1b0e-4b61-ae90-a1b8d4b4ad87.png)
+<H2> - Function get all orders
+
+![image](https://user-images.githubusercontent.com/85630559/233853159-ab55e9ef-a58e-4ad3-a517-d19640539548.png)
+<H2> - Function get all items order by sellers
+
+![image](https://user-images.githubusercontent.com/85630559/233853233-1b56e21f-9bab-4c81-8f47-a1ed2cc2a232.png)
+<H2> - Function add new role
+
+![image](https://user-images.githubusercontent.com/85630559/233853870-eee2a053-592e-4cbc-9fbf-d3b948bdc436.png)
+<H2> - Function get all roles
+
+![image](https://user-images.githubusercontent.com/85630559/233853925-778ea947-7a87-46f3-a0d8-7a06c732696c.png)
+<H2> - Function get all spending
+
+![image](https://user-images.githubusercontent.com/85630559/233854067-9b962d2e-539b-4c5c-89a3-9a6addec1b4e.png)
+<H2> - Function update status users
+
+![image](https://user-images.githubusercontent.com/85630559/233854298-16265f08-826d-4897-b5a7-71f11842f6ce.png)
+![image](https://user-images.githubusercontent.com/85630559/233854322-1ffcb57c-6274-4d3e-ab45-7455bf8e46cb.png)
+<H2> - Function block user
+
+![image](https://user-images.githubusercontent.com/85630559/233854390-a8bb0a68-8825-438b-a025-43c7c34eb8fe.png)
+<H2> - Function all users block
+
+![image](https://user-images.githubusercontent.com/85630559/233854415-573aa587-8d50-4fb0-a9bc-6264020cb4fd.png)
+<H2> - Function unblock users
+
+![image](https://user-images.githubusercontent.com/85630559/233854492-c29d8834-793a-40e3-9a39-6c64e9289c7e.png)
+![image](https://user-images.githubusercontent.com/85630559/233854507-8070fd91-564d-4597-874a-2725013fc3e9.png)
+
+
+
 <H1> Seller controller
 
 <H1> Buyer controller
 
 <H1> Shipper controller
+<H2> Function get all items order by status
+
+![image](https://user-images.githubusercontent.com/85630559/233856009-36d09b2f-1456-4976-ae0d-8f934c11fd40.png)
+![image](https://user-images.githubusercontent.com/85630559/233857469-e3b75b5f-71ce-42c2-a968-a4b3efa5e565.png)
+![image](https://user-images.githubusercontent.com/85630559/233857620-5e8b2a81-d533-42c1-a049-0d1056f051a7.png)
+![image](https://user-images.githubusercontent.com/85630559/233857675-3889bfc5-6bd3-4cb1-8546-456265672420.png)
+
+
+<H2> Update status order
+
+![image](https://user-images.githubusercontent.com/85630559/233857517-f7d22528-a7e9-4b44-8ae6-7cd19e1e32aa.png)
+![image](https://user-images.githubusercontent.com/85630559/233857552-5f3afdc2-30dc-4704-b858-37ca6495cae4.png)
+![image](https://user-images.githubusercontent.com/85630559/233857580-c723312d-f964-4760-8c0d-1ccb460f52b2.png)
 
 <H1> All user 
+<H2> - Function get profile 
+
+![image](https://user-images.githubusercontent.com/85630559/233854691-ffd85751-9b7b-446a-a7cd-a3037376e1a1.png)
+<H2> - Function message to users
+
+
+<H2> - Function add new product
+
+![image](https://user-images.githubusercontent.com/85630559/233855082-95cd9542-bfb2-4344-a8db-e52f52003d90.png)
+<H2> - Function update product
+
+![image](https://user-images.githubusercontent.com/85630559/233855183-f4f89ecb-de9a-45a4-b553-07c7edf4e4fb.png)
+<H2> - Function delete product
+
+![image](https://user-images.githubusercontent.com/85630559/233855227-9de8b331-adcb-4a31-9aed-4dec24432890.png)
+<H2> - Function all items order
+
+![image](https://user-images.githubusercontent.com/85630559/233855632-b0fe25f1-c5b9-46ab-8c48-860435b4d964.png)
+<H2> - Function approve orders by buyer
+
+![image](https://user-images.githubusercontent.com/85630559/233855735-4f6727c6-b0cf-4719-b92b-973f8c8f676c.png)
+![image](https://user-images.githubusercontent.com/85630559/233855763-5f7a3c97-03c5-488b-88ee-a64ae53be648.png)
+<H2> - Function add new role
+
 
 
 

@@ -325,9 +325,21 @@ JWT will add to Back-List but logout should set up in front-end
 
 ![image](https://user-images.githubusercontent.com/85630559/233918807-cbe9c37e-7b60-42f4-aabf-4389b908265c.png)
 
-<H2> -Function get profile user
+<H2> - Function get profile user
 
 ![image](https://user-images.githubusercontent.com/85630559/233919393-8f035eb0-2410-4e70-bc15-a39e2517a2f5.png)
+
+<H2> - Function count follower 
+
+![image](https://user-images.githubusercontent.com/85630559/234009049-ef3f23cd-0ef0-4a19-8360-81ccdd55d636.png)
+
+<H2> - Function follow 
+
+![image](https://user-images.githubusercontent.com/85630559/234009242-a890488c-1e8f-4e61-a94a-fa0d70ef71de.png)
+
+<H2> - Function delete follow
+
+![image](https://user-images.githubusercontent.com/85630559/234009470-98ffd1e0-b560-4c30-8f48-4b17fc34fc9c.png)
 
 
 

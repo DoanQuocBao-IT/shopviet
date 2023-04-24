@@ -29,17 +29,22 @@ public class BuyerController {
     ReviewService reviewService;
     @Autowired
     MessageService messageService;
-    @PostMapping("/cart/add-item")
+    @PostMapping("/addCart/add-item")
     public CartItem addToCart(@RequestBody CartItem cartItem) {
         return cartItemService.addToCart(cartItem);
+    }
+
+    @PutMapping("/putCart/{id}/update-item")
+    public CartDto updateToCart(@RequestBody CartItem cartItem, @PathVariable int id){
+        return cartItemService.updateCart(id,cartItem);
+    }
+    @DeleteMapping("/delCart/{id}")
+    public String deleteCart(@PathVariable int id){
+        return cartItemService.deleteCartItem(id);
     }
     @GetMapping("/cart")
     public List<CartDto> getCartItems() {
         return cartItemService.getAllCartItem();
-    }
-    @PostMapping("/cart/{id}/update-item")
-    public CartItem updateCart(@RequestBody CartItem cartItem, @PathVariable int id){
-        return cartItemService.updateCart(id,cartItem);
     }
     @PostMapping("/order{order_id}/addcart{cart_id}_item")
     public OrderItem addToOrderItem(@PathVariable int order_id,@PathVariable int cart_id){
@@ -57,13 +62,13 @@ public class BuyerController {
     List<OrderUserDto> getAllOrderByBuyer(){
         return orderService.getAllOrderByBuyer();
     }
-    @GetMapping("/cancelled/order{order_id}")
-    OrderItem cancelledOrder(@PathVariable int order_id){
+    @GetMapping("/order/cancel/{order_id}")
+    OrderItemDto cancelledOrder(@PathVariable int order_id){
         return orderItemService.updateStatusCancelled(order_id);
     }
 
     @GetMapping("/order/success/{id}")
-    OrderItem updateOrderSuccess(@PathVariable int id){
+    OrderItemDto updateOrderSuccess(@PathVariable int id){
         return orderItemService.updateStatusSuccess(id);
     }
     @PostMapping("/review/orderItem{orderItem_id}")

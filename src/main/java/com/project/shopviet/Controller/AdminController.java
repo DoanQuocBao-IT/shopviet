@@ -30,16 +30,18 @@ public class AdminController {
     OrderItemService orderItemService;
     @Autowired
     MessageService messageService;
-
-    @GetMapping("/allOrder")
-    public List<OrderUserDto> getAllOrder(){
-        return orderService.getAllOrder();
+    @PostMapping("/addCat")
+    public Category addCategory(@RequestBody Category category){
+        return categoryService.addCategory(category);
     }
-    @GetMapping("/allOrderItem")
-    public List<OrderItemDto> getAllOrderItem(){
-        return orderItemService.getAllOrderItem();
+    @DeleteMapping("/delCat/{id}")
+    public String deleteCategory(@PathVariable int id){
+        return categoryService.deleteCategory(id);
     }
-
+    @PutMapping("/putCat/{id}")
+    public Category updateCategory(@RequestBody Category category,@PathVariable int id){
+        return categoryService.updateCategory(id, category);
+    }
     @PostMapping("/addBrand")
     public Brand addBrand(@RequestBody Brand brand){
         return brandService.addBrand(brand);
@@ -53,18 +55,15 @@ public class AdminController {
         return brandService.updateBrand(id, brand);
     }
 
-    @PostMapping("/addCat")
-    public Category addCategory(@RequestBody Category category){
-        return categoryService.addCategory(category);
+    @GetMapping("/allOrder")
+    public List<OrderUserDto> getAllOrder(){
+        return orderService.getAllOrder();
     }
-    @DeleteMapping("/delCat/{id}")
-    public String deleteCategory(@PathVariable int id){
-        return categoryService.deleteCategory(id);
+    @GetMapping("/allOrderItem")
+    public List<OrderItemDto> getAllOrderItem(){
+        return orderItemService.getAllOrderItem();
     }
-    @PutMapping("/putCat/{id}")
-    public Category updateCategory(@RequestBody Category category,@PathVariable int id){
-        return categoryService.updateCategory(id, category);
-    }
+
 
 
     @GetMapping("/all/{role}")

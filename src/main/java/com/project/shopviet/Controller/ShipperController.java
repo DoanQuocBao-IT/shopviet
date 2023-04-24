@@ -1,6 +1,7 @@
 package com.project.shopviet.Controller;
 
 import com.project.shopviet.DTO.MessageDto;
+import com.project.shopviet.DTO.OrderItemDto;
 import com.project.shopviet.Model.Messages;
 import com.project.shopviet.Model.OrderItem;
 import com.project.shopviet.Model.User;
@@ -24,33 +25,33 @@ public class ShipperController {
     MessageService messageService;
 
     @GetMapping("/allorder/approved")
-    List<OrderItem> getAllOrderApproved(){
+    List<OrderItemDto> getAllOrderApproved(){
         return orderItemService.getAllOrderItemApproved();
     }
     @GetMapping("/allorder/shipped")
-    List<OrderItem> getAllOrderShipped(){
+    List<OrderItemDto> getAllOrderShipped(){
         return orderItemService.getAllOrderItemShipped();
     }
     @GetMapping("/allorder/ontheway")
-    List<OrderItem> getAllOrderOnTheWay(){
+    List<OrderItemDto> getAllOrderOnTheWay(){
         return orderItemService.getAllOrderItemOnTheWay();
     }
     @GetMapping("/allorder/delivered")
-    List<OrderItem> getAllOrderDelivered(){
+    List<OrderItemDto> getAllOrderDelivered(){
         return orderItemService.getAllOrderItemDelivered();
     }
 
 
     @GetMapping("/order/shipped/{id}")
-    OrderItem updateOrderShipped(@PathVariable int id){
+    OrderItemDto updateOrderShipped(@PathVariable int id){
         return orderItemService.updateStatusShipped(id);
     }
     @GetMapping("/order/ontheway/{id}")
-    OrderItem updateOrderOnTheWay(@PathVariable int id){
+    OrderItemDto updateOrderOnTheWay(@PathVariable int id){
         return orderItemService.updateStatusOnTheWay(id);
     }
     @GetMapping("/order/delivered/{id}")
-    OrderItem updateOrderDelivered(@PathVariable int id){
+    OrderItemDto updateOrderDelivered(@PathVariable int id){
         return orderItemService.updateStatusDelivered(id);
     }
 

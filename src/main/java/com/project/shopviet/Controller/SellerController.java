@@ -39,7 +39,7 @@ public class SellerController {
     public Product updateProduct(@RequestBody Product product,@PathVariable int id){
         return productService.updateProduct(id, product);
     }
-    @GetMapping("/allOrderItem1")
+    @GetMapping("/allOrderItem")
     public List<OrderItemDto> getAllOrderItemOfSeller(){
         return orderItemService.getAllOrderItemOfSeller();
     }
@@ -48,7 +48,7 @@ public class SellerController {
         return orderService.getAllOrderBySeller(seller_id);
     }
     @GetMapping("/approved/order{order_id}")
-    OrderItem approvedOrder(@PathVariable int order_id){
+    OrderItemDto approvedOrder(@PathVariable int order_id){
         return orderItemService.updateStatusApproved(order_id);
     }
     @PostMapping("/feedback/{review_id}")

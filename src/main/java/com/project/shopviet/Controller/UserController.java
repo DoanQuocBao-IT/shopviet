@@ -19,28 +19,31 @@ public class UserController {
     ProductService productService;
     @Autowired
     UserService userService;
-    @GetMapping("/allBrand")
-    public List<BrandDto> getAllBrand(){
-        return brandService.getAllBrand();
-    }
-    @GetMapping("/allBrandProduct")
-    public List<BrandProductDto> getAllBrandProduct(){
-        return brandService.getAllBrandProduct();
-    }
-    @GetMapping("/brand/cat{category_id}")
-    public List<BrandDto> getAllBrandForCategoryId(@PathVariable int category_id){
-        return brandService.getBrandByCategoryId(category_id);
-    }
     @GetMapping("/allCat")
     public List<CategoryDto> getAllCategory(){
         return categoryService.getAllCategory();
     }
 
+    @GetMapping("/allBrand")
+    public List<BrandDto> getAllBrand(){
+        return brandService.getAllBrand();
+    }
+    @GetMapping("/brand/cat{category_id}")
+    public List<BrandDto> getAllBrandForCategoryId(@PathVariable int category_id){
+        return brandService.getBrandByCategoryId(category_id);
+    }
+    @GetMapping("/allBrandProduct")
+    public List<BrandProductDto> getAllBrandProduct(){
+        return brandService.getAllBrandProduct();
+    }
     @GetMapping("/allProd")
     public List<ProductDto> getAllProduct(@RequestParam String sort){
         return productService.getAllProduct(sort);
     }
-
+    @GetMapping("/product")
+    public List<ProductDto> findProductByName(@RequestParam String name){
+        return productService.findProductByName(name);
+    }
     @GetMapping("/Product/{id}")
     public Optional<ProductDetailDto> getProductById(@PathVariable int id){
         return productService.findProductById(id);

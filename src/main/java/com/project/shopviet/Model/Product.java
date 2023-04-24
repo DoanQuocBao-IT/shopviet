@@ -58,4 +58,13 @@ public class Product {
 
         return rate;
     }
+    @Override
+    public String toString() {
+        return " ID: " +id+
+                "\n\t   Name: " + name +
+                "\n\t   Price: " + price +
+                "\n\t   Sold: " + sold +
+                "\n\t   Rate"+ rate +
+                "\n\t   Image : '" + image;
+    }
 }

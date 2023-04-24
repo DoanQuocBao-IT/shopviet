@@ -12,5 +12,4 @@ public class ProductDto {
     private int sold;
     private double rate;
     private String image;
-
 }

@@ -17,5 +17,6 @@ public interface ProductService {
     List<ProductDto> getProductForBrand(int brand_id);
     List<String> getAllImageProduct();
     List<ProductDto> getProductBySeller(int seller_id);
+    List<ProductDto> findProductByName(String name);
     boolean isExistById(int id);
 }

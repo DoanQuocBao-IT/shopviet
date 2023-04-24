@@ -1,0 +1,2850 @@
+{
+	"info": {
+		"_postman_id": "304169fb-5df0-4e75-b1f1-2df0130b4a75",
+		"name": "ShopViet",
+		"description": "StartFragment\n\nShopViet là một ứng dụng thương mại điện tử cho phép người dùng mua sắm các sản phẩm từ các nhà bán hàng trên toàn quốc. Với back end được thiết kế với các API lấy ý tưởng từ Shoppe, ShopViet cung cấp cho người dùng trải nghiệm mua sắm thuận tiện và đa dạng với hàng ngàn sản phẩm đa dạng và giá cả cạnh tranh.\n\nCác API của ShopViet được tích hợp sẵn với Postman, cho phép người dùng dễ dàng gọi các API để lấy thông tin sản phẩm, giá cả, danh mục, đánh giá của khách hàng và các thông tin khác. Điều này giúp cho các nhà phát triển và quản trị viên có thể dễ dàng quản lý và cập nhật các thông tin sản phẩm, giúp cho người dùng có được trải nghiệm mua sắm tốt nhất.\n\nNgoài ra, ShopViet còn có tính năng giỏ hàng và thanh toán trực tuyến, giúp cho người dùng tiết kiệm thời gian và tiền bạc khi mua sắm. Các chức năng này được tích hợp thông qua các API của ShopViet, giúp cho người dùng có thể thao tác nhanh chóng và dễ dàng.\n\nEndFragment",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "23897068"
+	},
+	"item": [
+		{
+			"name": "Authentication Controller",
+			"item": [
+				{
+					"name": "localhost:8080/auth/register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\":\"bao9\",\r\n    \"password\":\"12345\",\r\n    \"fname\":\"Doan Quoc Bao\",\r\n    \"email\":\"doanquocbao2002@gmail.com\",\r\n    \"phone\":\"072335462\",\r\n    \"image\":\"https://th.bing.com/th/id/OIP.8TW78kUwyJHUDIwWJfjNnQHaFY?w=243&h=180&c=7&r=0&o=5&dpr=1.1&pid=1.7\",\r\n    \"roleName\":\"seller\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/auth/register",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"auth",
+								"register"
+							]
+						},
+						"description": "Chức năng đăng kí tài khoản cho người dùng mới , người dùng cần cập các thông tin cá nhân và vai trò trong hệ thống là seller, shipper hoặc buybuyer. Nếu ngươid dùng đăng kí người dùng seller hoặc shipper thì phải chờ admin xác nhận tài khoản và gởi thư qua mail."
+					},
+					"response": []
+				},
+				{
+					"name": "localhost:8080/auth/login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\":\"bao4\",\r\n    \"password\":\"12345\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/auth/login",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						},
+						"description": "Chức năng đăng nhập tài khoản, người dùng cần nhập username và password để đăng nhập tài khoản"
+					},
+					"response": []
+				},
+				{
+					"name": "Forgot Password",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "doanquocbao2002@gmail.com",
+							"options": {
+								"raw": {
+									"language": "text"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/auth/forgot-password",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"auth",
+								"forgot-password"
+							]
+						},
+						"description": "Chức năng quên mật khẩu , người dùng ﻿khi chọn chức năng quên mật khẩu thì sẽ gữi email của tài khoản đã quên mật khẩu. Hệ thống sẽ kiểm tra mail và gữi đến mail 1 liên kết chứa 1 trang reset-password và 1 đoạn mã token"
+					},
+					"response": []
+				},
+				{
+					"name": "Reset Password",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "12345",
+							"options": {
+								"raw": {
+									"language": "text"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/auth/reset-password?token=4deb01cc-38df-4f5c-8a81-72616b668659",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"auth",
+								"reset-password"
+							],
+							"query": [
+								{
+									"key": "token",
+									"value": "4deb01cc-38df-4f5c-8a81-72616b668659"
+								}
+							]
+						},
+						"description": "Sau khi kiểm tra mail để tìm thấy link thay đổi mật khẩu thì nhấn vào link để chuyẻn đến trang reset-password và nhập mật khẩu mới kèm theo mã token đã gữi kèm vào mail"
+					},
+					"response": []
+				}
+			],
+			"description": "StartFragment\n\nSpring Security is a powerful authentication and authorization framework that provides secure login functionality for applications. With Spring Security, users can log in using their username and password, and their credentials are securely encrypted for protection. This ensures that only authorized users can access the application, providing an extra layer of security for your application.\n\nEndFragment"
+		},
+		{
+			"name": "Admin Controller",
+			"item": [
+				{
+					"name": "Get User",
+					"item": [
+						{
+							"name": "Admin User",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW8xIiwicm9sZSI6ImFkbWluIiwiZXhwIjoxNjgyNjI3MTQwLCJpYXQiOjE2ODIyNjcxNDB9.5ZFaedZimPJ-vLIG2xWqT3rpMxke-uIKol7aH667oYM",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/api/admin/all/admin",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"admin",
+										"all",
+										"admin"
+									]
+								},
+								"description": "Chức năng lấy tất cả người dùng có vai trò admin trong hệ thống"
+							},
+							"response": []
+						},
+						{
+							"name": "Seller User",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW8xIiwicm9sZSI6ImFkbWluIiwiZXhwIjoxNjgyNjI3MTQwLCJpYXQiOjE2ODIyNjcxNDB9.5ZFaedZimPJ-vLIG2xWqT3rpMxke-uIKol7aH667oYM",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/api/admin/all/seller/andshipper",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"admin",
+										"all",
+										"seller",
+										"andshipper"
+									]
+								},
+								"description": "Chức năng láy tất cả người dùng có vai trò admin và seller trong hệ thốnthống, có thể thay đổi vai trò khác"
+							},
+							"response": []
+						},
+						{
+							"name": "Buyer User",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW8xIiwicm9sZSI6ImFkbWluIiwiZXhwIjoxNjgyNjI3MTQwLCJpYXQiOjE2ODIyNjcxNDB9.5ZFaedZimPJ-vLIG2xWqT3rpMxke-uIKol7aH667oYM",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/api/admin/all/buyer",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"admin",
+										"all",
+										"buyer"
+									]
+								},
+								"description": "Chức năng lấy tất cá thông tin tài khoản người mua hàng"
+							},
+							"response": []
+						},
+						{
+							"name": "Shipper User",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW8xIiwicm9sZSI6ImFkbWluIiwiZXhwIjoxNjgyNjI3MTQwLCJpYXQiOjE2ODIyNjcxNDB9.5ZFaedZimPJ-vLIG2xWqT3rpMxke-uIKol7aH667oYM",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/api/admin/all/shipper",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"admin",
+										"all",
+										"shipper"
+									]
+								},
+								"description": "Chức năng lấy tất cả thông tin của người dùng shipper"
+							},
+							"response": []
+						},
+						{
+							"name": "Get All Users",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW8xIiwicm9sZSI6ImFkbWluIiwiZXhwIjoxNjgyNjI3MTQwLCJpYXQiOjE2ODIyNjcxNDB9.5ZFaedZimPJ-vLIG2xWqT3rpMxke-uIKol7aH667oYM",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/api/admin/allUser",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"admin",
+										"allUser"
+									]
+								},
+								"description": "Chức năng lấy tất cả người dùng trong hệ thống"
+							},
+							"response": []
+						}
+					],
+					"description": "Get all user by name role"
+				},
+				{
+					"name": "Get Category",
+					"item": [
+						{
+							"name": "Add Category",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW8xIiwicm9sZSI6ImFkbWluIiwiZXhwIjoxNjgyNjI3MTQwLCJpYXQiOjE2ODIyNjcxNDB9.5ZFaedZimPJ-vLIG2xWqT3rpMxke-uIKol7aH667oYM",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"Hoang Sa\",\r\n    \"image\": \"https://incucdep.com/wp-content/uploads/2014/12/logo-thoi-trang.jpg\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8080/api/admin/addCat",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"admin",
+										"addCat"
+									]
+								},
+								"description": "Chức năng thêm danh mục, admin sẽ thêm vào danh mục sản phẩm để người dùng dễ dàng tìm kiếm sản phẩm hơn"
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Category",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW8xIiwicm9sZSI6ImFkbWluIiwiZXhwIjoxNjgyNjI3MTQwLCJpYXQiOjE2ODIyNjcxNDB9.5ZFaedZimPJ-vLIG2xWqT3rpMxke-uIKol7aH667oYM",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/api/admin/delCat/11",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"admin",
+										"delCat",
+										"11"
+									]
+								},
+								"description": "StartFragment\n\nChức năng xóa danh mục, admin sẽ xóa danh mục khi cần thiết\n\nEndFragment"
+							},
+							"response": []
+						},
+						{
+							"name": "Edit Category",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW8xIiwicm9sZSI6ImFkbWluIiwiZXhwIjoxNjgyNjI3MTQwLCJpYXQiOjE2ODIyNjcxNDB9.5ZFaedZimPJ-vLIG2xWqT3rpMxke-uIKol7aH667oYM",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"Truong Sa\",\r\n    \"image\": \"https://incucdep.com/wp-content/uploads/2014/12/logo-thoi-trang.jpg\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8080/api/admin/putCat/10",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"admin",
+										"putCat",
+										"10"
+									]
+								},
+								"description": "StartFragment\n\nChức năng chỉnh sửa danh mục, admin sẽ có thể chỉnh sửa tên ảnh danh mục\n\nEndFragment"
+							},
+							"response": []
+						}
+					],
+					"description": "StartFragment\n\nCategory management, admins can create, update, and delete product categories\n\nEndFragment"
+				},
+				{
+					"name": "Get Brand",
+					"item": [
+						{
+							"name": "Add Brand",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW8xIiwicm9sZSI6ImFkbWluIiwiZXhwIjoxNjgyNjI3MTQwLCJpYXQiOjE2ODIyNjcxNDB9.5ZFaedZimPJ-vLIG2xWqT3rpMxke-uIKol7aH667oYM",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"Oc\",\r\n    \"image\": \"https://aitvietnam.com/wp-content/uploads/2022/01/logo-cac-thuong-hieu-thoi-trang-noi-tieng-16.jpg\",\r\n    \"category\":{\r\n        \"id\":12\r\n    }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8080/api/admin/addBrand",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"admin",
+										"addBrand"
+									]
+								},
+								"description": "Chức năng thêm nhãn hàng của admin, trong nhãn hàng phải thuộc 1 danh mục"
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Brand",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW8xIiwicm9sZSI6ImFkbWluIiwiZXhwIjoxNjgyNjI3MTQwLCJpYXQiOjE2ODIyNjcxNDB9.5ZFaedZimPJ-vLIG2xWqT3rpMxke-uIKol7aH667oYM",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/api/admin/delBrand/15",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"admin",
+										"delBrand",
+										"15"
+									]
+								},
+								"description": "Chức năng xóa nhãn hànhàng, admin sẽ xóa nhãn hàng khi cần thiết"
+							},
+							"response": []
+						},
+						{
+							"name": "Edit Brand",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW8xIiwicm9sZSI6ImFkbWluIiwiZXhwIjoxNjgyNjI3MTQwLCJpYXQiOjE2ODIyNjcxNDB9.5ZFaedZimPJ-vLIG2xWqT3rpMxke-uIKol7aH667oYM",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"Oc Gao\",\r\n    \"image\": \"https://aitvietnam.com/wp-content/uploads/2022/01/logo-cac-thuong-hieu-thoi-trang-noi-tieng-16.jpg\",\r\n    \"category\": {\r\n        \"id\": 12\r\n    }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8080/api/admin/putBrand/1",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"admin",
+										"putBrand",
+										"1"
+									]
+								},
+								"description": "Chức năng chỉnh sửa thương hiện, admin sẽ có thể chỉnh sửa tên ảnh thương hiệu"
+							},
+							"response": []
+						}
+					],
+					"description": "StartFragment\n\nBrand management allows admins to create and manage brands\n\nEndFragmen"
+				},
+				{
+					"name": "Order",
+					"item": [
+						{
+							"name": "Get All Order",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW8xIiwicm9sZSI6ImFkbWluIiwiZXhwIjoxNjgyNjI3MTQwLCJpYXQiOjE2ODIyNjcxNDB9.5ZFaedZimPJ-vLIG2xWqT3rpMxke-uIKol7aH667oYM",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/api/admin/allOrder",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"admin",
+										"allOrder"
+									]
+								},
+								"description": "Chức năng lấy tất cả đơn đặt hàng của người dùng, dùng đẻ quản lí và phân tích đơn hàng"
+							},
+							"response": []
+						},
+						{
+							"name": "Get List Item Order",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW8xIiwicm9sZSI6ImFkbWluIiwiZXhwIjoxNjgyNjI3MTQwLCJpYXQiOjE2ODIyNjcxNDB9.5ZFaedZimPJ-vLIG2xWqT3rpMxke-uIKol7aH667oYM",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/api/admin/allOrderItem",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"admin",
+										"allOrderItem"
+									]
+								},
+								"description": "Chức năng lấy tất cả đơn đặt các món hàng, admin sẽ được phép lấy tất các đơn hàng các sản phẩm đã được người dùng đặt để phân tích và quản lí đơn hàng ."
+							},
+							"response": []
+						}
+					],
+					"description": "Order management, admin can get all order of seller and get all orderItem"
+				},
+				{
+					"name": "Get Role",
+					"item": [
+						{
+							"name": "Add Role",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW8xIiwicm9sZSI6ImFkbWluIiwiZXhwIjoxNjgyNjI3MTQwLCJpYXQiOjE2ODIyNjcxNDB9.5ZFaedZimPJ-vLIG2xWqT3rpMxke-uIKol7aH667oYM",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\":\"Manager\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8080/api/admin/add/role",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"admin",
+										"add",
+										"role"
+									]
+								},
+								"description": "Chức năng thêm quyền cho một người dùng khác, admin sẽ có quyền thêm quyền khác cho 1 tài khoản người dùng khác"
+							},
+							"response": []
+						},
+						{
+							"name": "All Role",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW8xIiwicm9sZSI6ImFkbWluIiwiZXhwIjoxNjgyNjI3MTQwLCJpYXQiOjE2ODIyNjcxNDB9.5ZFaedZimPJ-vLIG2xWqT3rpMxke-uIKol7aH667oYM",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/api/admin/all/role",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"admin",
+										"all",
+										"role"
+									]
+								},
+								"description": "Chức năng lấy tất cả các quyền trong hệ thống"
+							},
+							"response": []
+						}
+					],
+					"description": "Role management, admin can add rode, get role in system"
+				},
+				{
+					"name": "Approve User",
+					"item": [
+						{
+							"name": "All User Not Approve",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW8xIiwicm9sZSI6ImFkbWluIiwiZXhwIjoxNjgyNjI3MTQwLCJpYXQiOjE2ODIyNjcxNDB9.5ZFaedZimPJ-vLIG2xWqT3rpMxke-uIKol7aH667oYM",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/api/admin/all/approve",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"admin",
+										"all",
+										"approve"
+									]
+								},
+								"description": "Chức năng lấy danh sách các tài khoản seller hoặc shipper chưa được chấp thuận"
+							},
+							"response": []
+						},
+						{
+							"name": "Approve Seller Or Shipper",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW8xIiwicm9sZSI6ImFkbWluIiwiZXhwIjoxNjgyNjI3MTQwLCJpYXQiOjE2ODIyNjcxNDB9.5ZFaedZimPJ-vLIG2xWqT3rpMxke-uIKol7aH667oYM",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/api/admin/approve/user/9",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"admin",
+										"approve",
+										"user",
+										"9"
+									]
+								},
+								"description": "Chức năng chấp thuận tài khoản người dùng, admin sẽ có quyền chấp thuật tài khoản người dùng seller hoặc shipper đã đăng kí tài khoản và sẽ gữi mail thông báo đến người dùng là tài khoản đã được chấp thuận"
+							},
+							"response": []
+						}
+					],
+					"description": "Admin can approve user with role seller or shipper, user has role buyer"
+				},
+				{
+					"name": "Block User",
+					"item": [
+						{
+							"name": "Block User",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW8xIiwicm9sZSI6ImFkbWluIiwiZXhwIjoxNjgyNjI3MTQwLCJpYXQiOjE2ODIyNjcxNDB9.5ZFaedZimPJ-vLIG2xWqT3rpMxke-uIKol7aH667oYM",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/api/admin/block/user/5",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"admin",
+										"block",
+										"user",
+										"5"
+									]
+								},
+								"description": "Chức năng khóa tài khoản người dùng sai phạm"
+							},
+							"response": []
+						},
+						{
+							"name": "UnBlock User",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW8xIiwicm9sZSI6ImFkbWluIiwiZXhwIjoxNjgyNjI3MTQwLCJpYXQiOjE2ODIyNjcxNDB9.5ZFaedZimPJ-vLIG2xWqT3rpMxke-uIKol7aH667oYM",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/api/admin/unblock/user/5",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"admin",
+										"unblock",
+										"user",
+										"5"
+									]
+								},
+								"description": "Chức năng mở khoản tài khoản người dùng đang bị khóa"
+							},
+							"response": []
+						},
+						{
+							"name": "All Block User",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW8xIiwicm9sZSI6ImFkbWluIiwiZXhwIjoxNjgyNjI3MTQwLCJpYXQiOjE2ODIyNjcxNDB9.5ZFaedZimPJ-vLIG2xWqT3rpMxke-uIKol7aH667oYM",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/api/admin/all/block",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"admin",
+										"all",
+										"block"
+									]
+								},
+								"description": "Chức năng lấy tất cả tài khoản người dùng đang bị khóa"
+							},
+							"response": []
+						}
+					],
+					"description": "Chức năng khóa tài khoản người dùng, người dùng bị khóa tài khoản sẽ không thể đăng nhập tài khoản"
+				},
+				{
+					"name": "Get Profile",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW8xIiwicm9sZSI6ImFkbWluIiwiZXhwIjoxNjgyNjI3MTQwLCJpYXQiOjE2ODIyNjcxNDB9.5ZFaedZimPJ-vLIG2xWqT3rpMxke-uIKol7aH667oYM",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/api/admin/profile",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"admin",
+								"profile"
+							]
+						},
+						"description": "Chức năng lấy thông tin cá nhận của người dùng đăng nhập"
+					},
+					"response": []
+				},
+				{
+					"name": "Send Message",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW8xIiwicm9sZSI6ImFkbWluIiwiZXhwIjoxNjgyNjI3MTQwLCJpYXQiOjE2ODIyNjcxNDB9.5ZFaedZimPJ-vLIG2xWqT3rpMxke-uIKol7aH667oYM",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"content\":\"Hello, deliveryman!\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/admin/message/user/3",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"admin",
+								"message",
+								"user",
+								"3"
+							]
+						},
+						"description": "Chức năng gởi tin nhắn, chức năng này cho phép các người dùng trong hệ thống có thẻ nhắn tin với nhạu"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Message",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW8xIiwicm9sZSI6ImFkbWluIiwiZXhwIjoxNjgyNjI3MTQwLCJpYXQiOjE2ODIyNjcxNDB9.5ZFaedZimPJ-vLIG2xWqT3rpMxke-uIKol7aH667oYM",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/api/admin/message/user/3",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"admin",
+								"message",
+								"user",
+								"3"
+							]
+						},
+						"description": "Chức năng lấy tin nhắn, người dùng có chức năng lấy đoạn tin nhắn giữa người dùng đăng nhập với người dùng khác"
+					},
+					"response": []
+				}
+			],
+			"description": "StartFragment\n\nThe user management feature allows the admin to manage all users registered on the system. This feature provides the ability to add, approve, and block user accounts as well as manage their roles and permissions. In addition, the admin can also view all the orders made by users and manage them as needed. This feature gives the admin complete control over the user accounts and their actions within the system.\n\nWith category management, admins can create, update, and delete product categories to ensure that products are well-organized and easy to find. Brand management allows admins to create and manage brands to enhance the shopping experience for customers.\n\nEndFragment"
+		},
+		{
+			"name": "Seller Controller",
+			"item": [
+				{
+					"name": "Get Product",
+					"item": [
+						{
+							"name": "Add Product",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW8yIiwicm9sZSI6InNlbGxlciIsImV4cCI6MTY4MjYzMDYxNiwiaWF0IjoxNjgyMjcwNjE2fQ.CfwT1yy5ucGT-oMli8eqDk89i8HzyFDXXE5-12ahjsY",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"Ga Kho To\",\r\n    \"price\": 35,\r\n    \"inventory\": 284,\r\n    \"description\": \"Thành phần vải: 100% Cotton Thiết kế áo thun tay ngắn nam tính, năng động Phom dáng ôm nhẹ nhàng thoải mái\",\r\n    \"image\": \"https://product.hstatic.net/1000284478/product/03_586666_1_3c1db6f15df141c9a37350a45fda0dce_large.jpg\",\r\n    \"brand\": {\r\n        \"id\": 1\r\n    }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8080/api/seller/addProd",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"seller",
+										"addProd"
+									]
+								},
+								"description": "Chức năng thêm sản phẩm, chức năng này cho phép người bán có thể thêm sản phẩm vào hệ thống"
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Product",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW8yIiwicm9sZSI6InNlbGxlciIsImV4cCI6MTY4MjYzMDYxNiwiaWF0IjoxNjgyMjcwNjE2fQ.CfwT1yy5ucGT-oMli8eqDk89i8HzyFDXXE5-12ahjsY",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/api/seller/delProd/14",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"seller",
+										"delProd",
+										"14"
+									]
+								},
+								"description": "Chức năng xóa sản phẩm, chức năng này cho phép người bán xóa sản phẩm không còn bán nữa"
+							},
+							"response": []
+						},
+						{
+							"name": "Edit Product",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW8yIiwicm9sZSI6InNlbGxlciIsImV4cCI6MTY4MjYzMDYxNiwiaWF0IjoxNjgyMjcwNjE2fQ.CfwT1yy5ucGT-oMli8eqDk89i8HzyFDXXE5-12ahjsY",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n        \"name\": \"Ca Kho To\",\r\n        \"price\": 36,\r\n        \"inventory\": 28,\r\n        \"description\": \"Thành phần vải: 100% Cotton Thiết kế áo thun tay ngắn nam tính, năng động Phom dáng ôm nhẹ nhàng thoải mái\",\r\n        \"image\": \"https://product.hstatic.net/1000284478/product/03_586666_1_3c1db6f15df141c9a37350a45fda0dce_large.jpg\",\r\n        \"brand\": {\r\n            \"id\": 1\r\n        }\r\n        \r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8080/api/seller/putProd/14",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"seller",
+										"putProd",
+										"14"
+									]
+								},
+								"description": "Chức năng chỉnh sửa sản phẩm, cho phép người bán chỉnh sửa thông tin sản phẩm của mình"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Order",
+					"item": [
+						{
+							"name": "Get All Order Item",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW8yIiwicm9sZSI6InNlbGxlciIsImV4cCI6MTY4MjYzMDYxNiwiaWF0IjoxNjgyMjcwNjE2fQ.CfwT1yy5ucGT-oMli8eqDk89i8HzyFDXXE5-12ahjsY",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/api/seller/allOrderItem",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"seller",
+										"allOrderItem"
+									]
+								},
+								"description": "Chức năng lấy tất cả đơn đặt hàng sản phẩm của người mua hàng, cho phép người mua xem chi tiết tình trạng các đơn sản phẩm trong một đơn hàng lớn"
+							},
+							"response": []
+						},
+						{
+							"name": "Approved Order",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW8yIiwicm9sZSI6InNlbGxlciIsImV4cCI6MTY4MjYzMDYxNiwiaWF0IjoxNjgyMjcwNjE2fQ.CfwT1yy5ucGT-oMli8eqDk89i8HzyFDXXE5-12ahjsY",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/api/seller/approved/order15",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"seller",
+										"approved",
+										"order15"
+									]
+								},
+								"description": "Chức năng chấp thuận đơn hàng sản phẩm, người bán sẽ chấp thuận đơn đặt hàng sản phẩm của mình khi người mua đặt hàng"
+							},
+							"response": []
+						}
+					],
+					"description": "Chức năng đặt hàng giữa người mua và người bán"
+				},
+				{
+					"name": "Follow",
+					"item": [
+						{
+							"name": "Follow User",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW8yIiwicm9sZSI6InNlbGxlciIsImV4cCI6MTY4MjYzMDYxNiwiaWF0IjoxNjgyMjcwNjE2fQ.CfwT1yy5ucGT-oMli8eqDk89i8HzyFDXXE5-12ahjsY",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/api/seller/follow/user4",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"seller",
+										"follow",
+										"user4"
+									]
+								},
+								"description": "Chức năng theo dõi người dùng, người dùng hệ thống sẽ có thể theo dõi người dùng khác"
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Follow",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW8yIiwicm9sZSI6InNlbGxlciIsImV4cCI6MTY4MjYzMDYxNiwiaWF0IjoxNjgyMjcwNjE2fQ.CfwT1yy5ucGT-oMli8eqDk89i8HzyFDXXE5-12ahjsY",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/api/seller/delfollow/user4",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"seller",
+										"delfollow",
+										"user4"
+									]
+								},
+								"description": "Chức năng hủy theo dõi , người dùng có thể hủy theo dõi người dùng khác"
+							},
+							"response": []
+						},
+						{
+							"name": "Count Follower",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW8yIiwicm9sZSI6InNlbGxlciIsImV4cCI6MTY4MjYzMDYxNiwiaWF0IjoxNjgyMjcwNjE2fQ.CfwT1yy5ucGT-oMli8eqDk89i8HzyFDXXE5-12ahjsY",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/api/seller/countfollow/user4",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"seller",
+										"countfollow",
+										"user4"
+									]
+								},
+								"description": "Chức năng đếm số lượt theo dõi, cho phép người dùng biết được số người đang theo dõi tài khoản mình"
+							},
+							"response": []
+						}
+					],
+					"description": "Chức năng này cho phép người dùng có thể theo dõi người dùng khác để zem thông tin sản phẩm của người đó."
+				},
+				{
+					"name": "Feedback",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW8yIiwicm9sZSI6InNlbGxlciIsImV4cCI6MTY4MjYzMDYxNiwiaWF0IjoxNjgyMjcwNjE2fQ.CfwT1yy5ucGT-oMli8eqDk89i8HzyFDXXE5-12ahjsY",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "Cam on khach hang da tin shop",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/seller/feedback/7",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"seller",
+								"feedback",
+								"7"
+							]
+						},
+						"description": "Chức năng phản hồi, người bán có thẻ phản hồi lại cho nhận xét của người dùng về sản phẩm say khi người dùng nhận hàng"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Profile",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW8yIiwicm9sZSI6InNlbGxlciIsImV4cCI6MTY4MjYzMDYxNiwiaWF0IjoxNjgyMjcwNjE2fQ.CfwT1yy5ucGT-oMli8eqDk89i8HzyFDXXE5-12ahjsY",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/api/seller/profile",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"seller",
+								"profile"
+							]
+						},
+						"description": "StartFragment\n\nChức năng lấy thông tin cá nhận của người dùng đăng nhập\n\nEndFragme"
+					},
+					"response": []
+				},
+				{
+					"name": "Send Message",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW8yIiwicm9sZSI6InNlbGxlciIsImV4cCI6MTY4MjYzMDYxNiwiaWF0IjoxNjgyMjcwNjE2fQ.CfwT1yy5ucGT-oMli8eqDk89i8HzyFDXXE5-12ahjsY",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"content\":\"What cost are you shipper ?\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/seller/message/user/3",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"seller",
+								"message",
+								"user",
+								"3"
+							]
+						},
+						"description": "Chức năng gỡi tin nhắn, người bán có thể nhắn tin với các người dùng khác trong hệ thống"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Message",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW8yIiwicm9sZSI6InNlbGxlciIsImV4cCI6MTY4MjYzMDYxNiwiaWF0IjoxNjgyMjcwNjE2fQ.CfwT1yy5ucGT-oMli8eqDk89i8HzyFDXXE5-12ahjsY",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/api/seller/message/user/4",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"seller",
+								"message",
+								"user",
+								"4"
+							]
+						},
+						"description": "Chức năng lấy tin nhắn, người bán có thẻ lấy tin nhắn với các người dùng khác trong hệ thống"
+					},
+					"response": []
+				}
+			],
+			"description": "Seller can add, update, delete product\n\nSeller can follow user and get count follower of user\n\nSeller can approve order from buyer and get all order item have product myself\n\nSeller can get profile"
+		},
+		{
+			"name": "Shipper Controller",
+			"item": [
+				{
+					"name": "Get Order By Status",
+					"item": [
+						{
+							"name": "Get Order is Approved",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW8zIiwicm9sZSI6InNoaXBwZXIiLCJleHAiOjE2ODI2MzE3NDMsImlhdCI6MTY4MjI3MTc0M30.HgPekuU3gEqsvgyq1euKXeuJn6ubygTDB_Ssax3kK1c",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/api/shipper/allorder/approved",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"shipper",
+										"allorder",
+										"approved"
+									]
+								},
+								"description": "Chức năng lấy thông tin các đơn hàng, người dùng shipper sẽ được phép lấy thông tin các đơn hàng đã được chấp thuận bởi người bán"
+							},
+							"response": []
+						},
+						{
+							"name": "Get Order is Shipped",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW8zIiwicm9sZSI6InNoaXBwZXIiLCJleHAiOjE2ODI2MzE3NDMsImlhdCI6MTY4MjI3MTc0M30.HgPekuU3gEqsvgyq1euKXeuJn6ubygTDB_Ssax3kK1c",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/api/shipper/allorder/shipped",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"shipper",
+										"allorder",
+										"shipped"
+									]
+								},
+								"description": "Chức năng lấy trạng thái của đơn hàng là \"Đang vận chuyển\", người dùng shipper sẽ được lấy đơn hàng có trạng thái đơn hàng là \"Shipped\""
+							},
+							"response": []
+						},
+						{
+							"name": "Get Order is On The Way",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW8zIiwicm9sZSI6InNoaXBwZXIiLCJleHAiOjE2ODI2MzE3NDMsImlhdCI6MTY4MjI3MTc0M30.HgPekuU3gEqsvgyq1euKXeuJn6ubygTDB_Ssax3kK1c",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/api/shipper/allorder/ontheway",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"shipper",
+										"allorder",
+										"ontheway"
+									]
+								},
+								"description": "StartFragment\n\nChức năng lấy trạng thái của đơn hàng là \"Đang trên đường đến bạn \", người dùng shipper sẽ được lấy đơn hàng có trạng thái đơn hàng là \"OnTheWay\"\n\nEndFragment"
+							},
+							"response": []
+						},
+						{
+							"name": "Get Order is Delivered",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW8zIiwicm9sZSI6InNoaXBwZXIiLCJleHAiOjE2ODI2MzE3NDMsImlhdCI6MTY4MjI3MTc0M30.HgPekuU3gEqsvgyq1euKXeuJn6ubygTDB_Ssax3kK1c",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/api/shipper/allorder/delivered",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"shipper",
+										"allorder",
+										"delivered"
+									]
+								},
+								"description": "StartFragment\n\nChức năng lấy trạng thái của đơn hàng là \"Đã vận chuyển\", người dùng shipper sẽ được lấy đơn hàng có trạng thái đơn hàng là \"Delivered\"\n\nEndFragment"
+							},
+							"response": []
+						}
+					],
+					"description": "Chức năng lấy thông tin trạng thái đơn hànhàng, người dùng shipper sẽ lấy thông tin các đơn hàng và sẽ chọn các đơn hàng để vận chuyển, và sẽ liên tục cập nhật trạng thái của đơn hàng"
+				},
+				{
+					"name": "Update Status of Order",
+					"item": [
+						{
+							"name": "Update Status Shipped",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW8zIiwicm9sZSI6InNoaXBwZXIiLCJleHAiOjE2ODE3NDA1MTEsImlhdCI6MTY4MTM4MDUxMX0.Bzqllifd2ELIGIJFe4PGzTWYvcspo1dNZV5miID2_LY",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/api/shipper/order/shipped/1",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"shipper",
+										"order",
+										"shipped",
+										"1"
+									]
+								},
+								"description": "StartFragment\n\nChức năng cập nhật trạng thái của đơn hàng là \"Đang vận chuyển\", người dùng shipper sau khi nhận hàng sẽ cập nhật trạng thái đơn hàng là \"Shipped\"\n\nEndFragment"
+							},
+							"response": []
+						},
+						{
+							"name": "Update Status On The Way",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW8zIiwicm9sZSI6InNoaXBwZXIiLCJleHAiOjE2ODE3NDA1MTEsImlhdCI6MTY4MTM4MDUxMX0.Bzqllifd2ELIGIJFe4PGzTWYvcspo1dNZV5miID2_LY",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/api/shipper/order/ontheway/1",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"shipper",
+										"order",
+										"ontheway",
+										"1"
+									]
+								},
+								"description": "StartFragment\n\nChức năng cập nhật trạng thái của đơn hàng là \"Đang trên đường đến bạn \", người dùng shipper sau khikhi vận chuyển sẽ cập nhật trạng thái đơn hàng là \"OnTheWay\"\n\nEndFragment"
+							},
+							"response": []
+						},
+						{
+							"name": "Update Status Delivered",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW8zIiwicm9sZSI6InNoaXBwZXIiLCJleHAiOjE2ODE3NDA1MTEsImlhdCI6MTY4MTM4MDUxMX0.Bzqllifd2ELIGIJFe4PGzTWYvcspo1dNZV5miID2_LY",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/api/shipper/order/delivered/1",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"shipper",
+										"order",
+										"delivered",
+										"1"
+									]
+								},
+								"description": "StartFragment\n\nChức năng cập nhật trạng thái của đơn hàng là \"Đã vận chuyển\", người dùng shipper sau khi giao hàng sẽ cập nhật trạng thái đơn hàng là \"Delivered\"\n\nEndFragment"
+							},
+							"response": []
+						}
+					],
+					"description": "Chức năng cập nhật trạng thái của đơn hàng , người shipper sẽ luôn cập nhật trạng thái đơn hàng sau khi đã tiếp nhận đơn hàng cho đến khi người dùng nhận hàng"
+				},
+				{
+					"name": "Get Profile",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW8zIiwicm9sZSI6InNoaXBwZXIiLCJleHAiOjE2ODI2MzE3NDMsImlhdCI6MTY4MjI3MTc0M30.HgPekuU3gEqsvgyq1euKXeuJn6ubygTDB_Ssax3kK1c",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/api/shipper/profile",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"shipper",
+								"profile"
+							]
+						},
+						"description": "Chức năng lấy thông tin cá nhân, shipper có thể xem thông tin cá nhân"
+					},
+					"response": []
+				},
+				{
+					"name": "Send Message",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW8zIiwicm9sZSI6InNoaXBwZXIiLCJleHAiOjE2ODI2MzE3NDMsImlhdCI6MTY4MjI3MTc0M30.HgPekuU3gEqsvgyq1euKXeuJn6ubygTDB_Ssax3kK1c",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"content\":\"Hello, adminstrator\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/shipper/message/user/1",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"shipper",
+								"message",
+								"user",
+								"1"
+							]
+						},
+						"description": "Chức năng nhắn tin, người dùng shipper sẽ được nhắn tin với những người dùng khác"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Message",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW8zIiwicm9sZSI6InNoaXBwZXIiLCJleHAiOjE2ODI2MzE3NDMsImlhdCI6MTY4MjI3MTc0M30.HgPekuU3gEqsvgyq1euKXeuJn6ubygTDB_Ssax3kK1c",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/api/shipper/message/user/1",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"shipper",
+								"message",
+								"user",
+								"1"
+							]
+						},
+						"description": "Chức năng lấy tin nhắn, shipper có thể lấy toàn bộ tin nhắn của mình với người dùng khác"
+					},
+					"response": []
+				}
+			],
+			"description": "Shipper can get order item have status is approve, shipper, ontheway, delivered\n\nShipper can get update status order item\n\nShipper can get profile"
+		},
+		{
+			"name": "Buyer Controller",
+			"item": [
+				{
+					"name": "CartItem",
+					"item": [
+						{
+							"name": "Add product To Cart",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW80Iiwicm9sZSI6ImJ1eWVyIiwiZXhwIjoxNjgyNjMzNTIzLCJpYXQiOjE2ODIyNzM1MjN9.8PjuyA6Oo-LCq3UYX5RfZBKA2U2Rc9RE6ZIK83hiHcY",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"product\":{\r\n        \"id\": 12\r\n    },\r\n    \"quantity\":15\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8080/api/buyer/addCart/add-item",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"buyer",
+										"addCart",
+										"add-item"
+									]
+								},
+								"description": "Chức năng giỏ hàng, chức năng này cho phép người dùng mua hàng có thể thêm các sản phẩm vào trong giỏ hàng của mình"
+							},
+							"response": []
+						},
+						{
+							"name": "Update cart",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW80Iiwicm9sZSI6ImJ1eWVyIiwiZXhwIjoxNjgyNjMzNTIzLCJpYXQiOjE2ODIyNzM1MjN9.8PjuyA6Oo-LCq3UYX5RfZBKA2U2Rc9RE6ZIK83hiHcY",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"quantity\":10\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8080/api/buyer/putCart/13/update-item",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"buyer",
+										"putCart",
+										"13",
+										"update-item"
+									]
+								},
+								"description": "Chức năng cập nhật đơn hàng, người mua hàng sẽ có thể cập nhật đơn hàng như cập nhật lại số lượng sản phẩm của các sản phẩm trong giỏ hàng của mình"
+							},
+							"response": []
+						},
+						{
+							"name": "Delete cart item",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW80Iiwicm9sZSI6ImJ1eWVyIiwiZXhwIjoxNjgyNjMzNTIzLCJpYXQiOjE2ODIyNzM1MjN9.8PjuyA6Oo-LCq3UYX5RfZBKA2U2Rc9RE6ZIK83hiHcY",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/api/buyer/delCart/13",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"buyer",
+										"delCart",
+										"13"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get All Cart",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW80Iiwicm9sZSI6ImJ1eWVyIiwiZXhwIjoxNjgyNjMzNTIzLCJpYXQiOjE2ODIyNzM1MjN9.8PjuyA6Oo-LCq3UYX5RfZBKA2U2Rc9RE6ZIK83hiHcY",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/api/buyer/cart",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"buyer",
+										"cart"
+									]
+								},
+								"description": "Chức năng lấy giỏ hàng, người mua hàng đăng nhập sẽ lấy thông tin các sản phẩm trong giỏ hàng của mình ."
+							},
+							"response": []
+						}
+					],
+					"description": "Chức năng giỏ hàng, chức năng này cho phép người dùng mua hàng có thể thêm các sản phẩm vào trong giỏ hàng của mình"
+				},
+				{
+					"name": "Order",
+					"item": [
+						{
+							"name": "Add to Order",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW80Iiwicm9sZSI6ImJ1eWVyIiwiZXhwIjoxNjgyNjMzNTIzLCJpYXQiOjE2ODIyNzM1MjN9.8PjuyA6Oo-LCq3UYX5RfZBKA2U2Rc9RE6ZIK83hiHcY",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"consigneeName\":\"Nguyen Quoc Thuan\",\r\n    \"consigneePhone\":\"0563762533\",\r\n    \"consigneeEmail\":\"quocthuan@gmail.com\",\r\n    \"consigneeAddress\":\"28 Nguen Ba Luat, Binh Tho, Binh Chanh\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8080/api/buyer/order/add-orderItem",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"buyer",
+										"order",
+										"add-orderItem"
+									]
+								},
+								"description": "Chức năng thêm thông tin chi tiết đơn hàng, người dùng mua hàng sẽ thêm các thông tin nhận hàng trong đơn hàng"
+							},
+							"response": []
+						},
+						{
+							"name": "Get Order of Buyer",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW80Iiwicm9sZSI6ImJ1eWVyIiwiZXhwIjoxNjgyNjMzNTIzLCJpYXQiOjE2ODIyNzM1MjN9.8PjuyA6Oo-LCq3UYX5RfZBKA2U2Rc9RE6ZIK83hiHcY",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/api/buyer/allOrder",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"buyer",
+										"allOrder"
+									]
+								},
+								"description": "Chức năng lấy các đơn hàng, người mua hàng có thể lấy các đơn hàng của mình đã đặt"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "OrderItem",
+					"item": [
+						{
+							"name": "Add Order Item",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW80Iiwicm9sZSI6ImJ1eWVyIiwiZXhwIjoxNjgyNjMzNTIzLCJpYXQiOjE2ODIyNzM1MjN9.8PjuyA6Oo-LCq3UYX5RfZBKA2U2Rc9RE6ZIK83hiHcY",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/api/buyer/order5/addcart12_item",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"buyer",
+										"order5",
+										"addcart12_item"
+									]
+								},
+								"description": "Chức năng thêm các sản phẩm trong giỏ hàng vào đơn đặt hàng, cho phép người dùng bán hàng có thể thêm các sản phẩm có trong giỏ hàng vào thanh toán"
+							},
+							"response": []
+						},
+						{
+							"name": "Get All By ID Buyer",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW80Iiwicm9sZSI6ImJ1eWVyIiwiZXhwIjoxNjgyNjMzNTIzLCJpYXQiOjE2ODIyNzM1MjN9.8PjuyA6Oo-LCq3UYX5RfZBKA2U2Rc9RE6ZIK83hiHcY",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/api/buyer/order-item",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"buyer",
+										"order-item"
+									]
+								},
+								"description": "Chức năng lấy tất cả thông đơn hàng của các món hàng , người mua hàng sẽ được phép lấy các món hàng của mình"
+							},
+							"response": []
+						},
+						{
+							"name": "Update Status Order is Succesfull",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW80Iiwicm9sZSI6ImJ1eWVyIiwiZXhwIjoxNjgyNjMzNTIzLCJpYXQiOjE2ODIyNzM1MjN9.8PjuyA6Oo-LCq3UYX5RfZBKA2U2Rc9RE6ZIK83hiHcY",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/api/buyer/order/success/15",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"buyer",
+										"order",
+										"success",
+										"15"
+									]
+								},
+								"description": "Chức năng cập nhật trạng thái của món hàng, người mua hàng sau khi nhận hàng sẽ cập nhật trạng thái \"successful\""
+							},
+							"response": []
+						},
+						{
+							"name": "Cancelled Order",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW80Iiwicm9sZSI6ImJ1eWVyIiwiZXhwIjoxNjgyNjMzNTIzLCJpYXQiOjE2ODIyNzM1MjN9.8PjuyA6Oo-LCq3UYX5RfZBKA2U2Rc9RE6ZIK83hiHcY",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/api/buyer/order/cancel/17",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"buyer",
+										"order",
+										"cancel",
+										"17"
+									]
+								},
+								"description": "Chức năng hủy đơn hàng, người dùng có thể hủy đơn hàng nếu như đơn hàng đó chưa được người bán chấn thuận"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Follow",
+					"item": [
+						{
+							"name": "Follow User",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW80Iiwicm9sZSI6ImJ1eWVyIiwiZXhwIjoxNjgyNjMzNTIzLCJpYXQiOjE2ODIyNzM1MjN9.8PjuyA6Oo-LCq3UYX5RfZBKA2U2Rc9RE6ZIK83hiHcY",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/api/buyer/follow/user2",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"buyer",
+										"follow",
+										"user2"
+									]
+								},
+								"description": "Chức năng theo dõi người dùng, người mua hàng có thể theo dõi người dùng khác trong hệ thống"
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Follow",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW80Iiwicm9sZSI6ImJ1eWVyIiwiZXhwIjoxNjgyNjMzNTIzLCJpYXQiOjE2ODIyNzM1MjN9.8PjuyA6Oo-LCq3UYX5RfZBKA2U2Rc9RE6ZIK83hiHcY",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/api/buyer/delfollow/user2",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"buyer",
+										"delfollow",
+										"user2"
+									]
+								},
+								"description": "Chức năng hủy theo dõi, người dùng bán hàng có thể hủy theo dõi người dùng khác khi đã theo dõi"
+							},
+							"response": []
+						},
+						{
+							"name": "Count Follower",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW80Iiwicm9sZSI6ImJ1eWVyIiwiZXhwIjoxNjgyNjMzNTIzLCJpYXQiOjE2ODIyNzM1MjN9.8PjuyA6Oo-LCq3UYX5RfZBKA2U2Rc9RE6ZIK83hiHcY",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/api/buyer/countfollow/user2",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"buyer",
+										"countfollow",
+										"user2"
+									]
+								},
+								"description": "Chức năng đếm số lượng người theo dõi của người mua hàng"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Review",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW80Iiwicm9sZSI6ImJ1eWVyIiwiZXhwIjoxNjgyNjMzNTIzLCJpYXQiOjE2ODIyNzM1MjN9.8PjuyA6Oo-LCq3UYX5RfZBKA2U2Rc9RE6ZIK83hiHcY",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"rating\":5,\r\n    \"comment\":\"San pham dep, chat luong\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/buyer/review/orderItem15",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"buyer",
+								"review",
+								"orderItem15"
+							]
+						},
+						"description": "Chức năng đánh giá sản phẩm, người mua hàng sau khi nhận hàng thành công sẽ được đánh giá sản phẩm"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Profile",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW80Iiwicm9sZSI6ImJ1eWVyIiwiZXhwIjoxNjgyNjMzNTIzLCJpYXQiOjE2ODIyNzM1MjN9.8PjuyA6Oo-LCq3UYX5RfZBKA2U2Rc9RE6ZIK83hiHcY",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/api/buyer/profile",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"buyer",
+								"profile"
+							]
+						},
+						"description": "StartFragment\n\nChức năng lấy thông tin cá nhân, mua hàng có thể xem thông tin cá nhân\n\n  \n\nEndFragment"
+					},
+					"response": []
+				},
+				{
+					"name": "Send Message",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW80Iiwicm9sZSI6ImJ1eWVyIiwiZXhwIjoxNjgyNjMzNTIzLCJpYXQiOjE2ODIyNzM1MjN9.8PjuyA6Oo-LCq3UYX5RfZBKA2U2Rc9RE6ZIK83hiHcY",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"content\":\"Are you freeship ?\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/buyer/message/user/2",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"buyer",
+								"message",
+								"user",
+								"2"
+							]
+						},
+						"description": "StartFragment\n\nChức năng gỡi tin nhắn, người mua có thể nhắn tin với các người dùng khác trong hệ thống\n\n  \n\nEndFragment"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Message",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYW80Iiwicm9sZSI6ImJ1eWVyIiwiZXhwIjoxNjgyNjMzNTIzLCJpYXQiOjE2ODIyNzM1MjN9.8PjuyA6Oo-LCq3UYX5RfZBKA2U2Rc9RE6ZIK83hiHcY",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/api/buyer/message/user/2",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"buyer",
+								"message",
+								"user",
+								"2"
+							]
+						},
+						"description": "StartFragment\n\nChức năng lấy tin nhắn, người bán có thẻ lấy tin nhắn với các người dùng khác trong hệ thống\n\n  \n\nEndFragment"
+					},
+					"response": []
+				}
+			],
+			"description": "Buyer can add product into cart and add product from cart to order, buyer can create order detail\n\nBuyer can update my cart\n\nBuyer can follow another user and get count follower of user\n\nBuyer can update status order is success when order is delivered."
+		},
+		{
+			"name": "User Controller",
+			"item": [
+				{
+					"name": "Get Product",
+					"item": [
+						{
+							"name": "All Product By priceAsc",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": []
+								},
+								"url": {
+									"raw": "localhost:8080/api/shopviet/allProd?sort=priceAsc",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"shopviet",
+										"allProd"
+									],
+									"query": [
+										{
+											"key": "sort",
+											"value": "priceAsc"
+										}
+									]
+								},
+								"description": "Chức năng lấy sản phẩm theo mức giá ttừ thấp đến cao"
+							},
+							"response": []
+						},
+						{
+							"name": "All Product By priceDesc",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": []
+								},
+								"url": {
+									"raw": "localhost:8080/api/shopviet/allProd?sort=priceDesc",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"shopviet",
+										"allProd"
+									],
+									"query": [
+										{
+											"key": "sort",
+											"value": "priceDesc"
+										}
+									]
+								},
+								"description": "Chức năng lấy sản phẩm theo mức giá ttừ cao đến thấp"
+							},
+							"response": []
+						},
+						{
+							"name": "All Product By nameAsc",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": []
+								},
+								"url": {
+									"raw": "localhost:8080/api/shopviet/allProd?sort=nameAsc",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"shopviet",
+										"allProd"
+									],
+									"query": [
+										{
+											"key": "sort",
+											"value": "nameAsc"
+										}
+									]
+								},
+								"description": "Chức năng lấy sản phẩm theo tên sản phẩm"
+							},
+							"response": []
+						},
+						{
+							"name": "All Product By newest",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": []
+								},
+								"url": {
+									"raw": "localhost:8080/api/shopviet/allProd?sort=newest",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"shopviet",
+										"allProd"
+									],
+									"query": [
+										{
+											"key": "sort",
+											"value": "newest"
+										}
+									]
+								},
+								"description": "Chức năng lấy sản phẩm theo các sản phẩm mới nhất"
+							},
+							"response": []
+						},
+						{
+							"name": "Get Product ID",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/api/shopviet/Product/2",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"shopviet",
+										"Product",
+										"2"
+									]
+								},
+								"description": "Chức năng lấy chi tiết sản phẩm theo sản phẩm đã chọn"
+							},
+							"response": []
+						},
+						{
+							"name": "Get Product By Brand",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/api/shopviet/allProdInBrand/2",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"shopviet",
+										"allProdInBrand",
+										"2"
+									]
+								},
+								"description": "Chức năng lấy sản phẩm theo nhãn hiệu đã chọn"
+							},
+							"response": []
+						},
+						{
+							"name": "Get Product By Category",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/api/shopviet/allProdInCat/6",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"shopviet",
+										"allProdInCat",
+										"6"
+									]
+								},
+								"description": "Chức năng lấy sản phẩm theo danh mục đã chọn"
+							},
+							"response": []
+						},
+						{
+							"name": "Get Product By Seller",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/api/shopviet/allProd/seller/2",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"shopviet",
+										"allProd",
+										"seller",
+										"2"
+									]
+								},
+								"description": "Chức năng lấy sản phẩm theo người bán"
+							},
+							"response": []
+						},
+						{
+							"name": "Get Image Product",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/api/shopviet/allImageProd",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"shopviet",
+										"allImageProd"
+									]
+								},
+								"description": "Chức năng lấy hình ảnh của sản phẩm"
+							},
+							"response": []
+						},
+						{
+							"name": "All Product By soldAsc",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": []
+								},
+								"url": {
+									"raw": "localhost:8080/api/shopviet/allProd?sort=soleAsc",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"shopviet",
+										"allProd"
+									],
+									"query": [
+										{
+											"key": "sort",
+											"value": "soleAsc"
+										}
+									]
+								},
+								"description": "Chức năng lấy sản phẩm theo lượt bán từ cao đến thấp"
+							},
+							"response": []
+						},
+						{
+							"name": "All Product By soldDesc",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": []
+								},
+								"url": {
+									"raw": "localhost:8080/api/shopviet/allProd?sort=soldDesc",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"shopviet",
+										"allProd"
+									],
+									"query": [
+										{
+											"key": "sort",
+											"value": "soldDesc"
+										}
+									]
+								},
+								"description": "Chức năng lấy sản phẩm theo lượt bán từ thấp đến cao"
+							},
+							"response": []
+						},
+						{
+							"name": "Find Product By Name",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/api/shopviet/product?name=quan",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"shopviet",
+										"product"
+									],
+									"query": [
+										{
+											"key": "name",
+											"value": "quan"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "User can get product and sort product by name, price, sold, newest, ... get product from category, brand\n\nUser can get category, brand and get brand from category"
+				},
+				{
+					"name": "All Brand",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/api/shopviet/allBrand",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"shopviet",
+								"allBrand"
+							]
+						},
+						"description": "Chức năng lấy tất cả nhãn hiệu"
+					},
+					"response": []
+				},
+				{
+					"name": "All Brand By Category Id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/api/shopviet/brand/cat1",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"shopviet",
+								"brand",
+								"cat1"
+							]
+						},
+						"description": "Chức năng lấy nhãn hiệu theo danh mục"
+					},
+					"response": []
+				},
+				{
+					"name": "All Category",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/api/shopviet/allCat",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"shopviet",
+								"allCat"
+							]
+						},
+						"description": "Chức năng lấy tất cả danh mục"
+					},
+					"response": []
+				},
+				{
+					"name": "Get User ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/api/shopviet/user/1",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"shopviet",
+								"user",
+								"1"
+							]
+						},
+						"description": "Chức năng xem thông tin của người dùng trong hệ thống gồm có họ tên và ảnh đại diện"
+					},
+					"response": []
+				},
+				{
+					"name": "All Brand Product",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/api/shopviet/allBrandProduct",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"shopviet",
+								"allBrandProduct"
+							]
+						},
+						"description": "Chức năng lấy tất cả nhãn hiệu và tất cả sản phẩm trong các nhãn hiệu đó"
+					},
+					"response": []
+				}
+			],
+			"description": "Các chức năng lấy sản phẩm, danh mục, nhãn hàng sẽ được người dùng lấy mà không cần phải xác thực người dùng"
+		}
+	]
+}

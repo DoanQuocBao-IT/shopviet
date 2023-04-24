@@ -31,7 +31,7 @@ public class PasswordResetServiceImpl implements PasswordResetService {
         passwordResetTokenRepository.save(token);
         String subject = "Reset Your Password in ShopViet";
         String body = "To reset your password, please click the following link: "
-                + "http://localhost:8080/api/auth/reset-password?token=" + token.getToken();
+                + "http://localhost:8080/api/auth/reset-password?token=" + token.getToken()+"";
 
 
         // Send email

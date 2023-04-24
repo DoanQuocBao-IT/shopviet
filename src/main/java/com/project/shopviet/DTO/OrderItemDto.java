@@ -13,6 +13,7 @@ public class OrderItemDto {
     private int quantity;
     private double totalPrice;
     private OrderDetailDto orderDetail;
+    private String status;
     private Date createDateTime;
 
 }

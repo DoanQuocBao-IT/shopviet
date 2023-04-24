@@ -4,6 +4,7 @@ import com.project.shopviet.DTO.OrderItemDto;
 import com.project.shopviet.DTO.Status;
 import com.project.shopviet.Model.*;
 import com.project.shopviet.Repository.*;
+import com.project.shopviet.Service.EmailSenderService;
 import com.project.shopviet.Service.OrderItemService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,6 +29,9 @@ public class OrderItemServiceImpl implements OrderItemService {
     ProductRepository productRepository;
     @Autowired
     OrderRepository orderRepository;
+    @Autowired
+    private EmailSenderService emailSenderService;
+
 
     @Override
     public OrderItem addToOrderItem(int cart_id, int order_id) {
@@ -42,7 +47,6 @@ public class OrderItemServiceImpl implements OrderItemService {
         orderItem.setOrderDetail(orderDetail);
         orderItem.setStatus(Status.Pending.getOrderStatus());
         orderItem.setCreateDateTime(new Date());
-
         Product product=productRepository.findById(orderItem.getProduct().getId()).get();
         int inventory=product.getInventory()-orderItem.getQuantity();
         int sold=product.getSold()+orderItem.getQuantity();
@@ -53,6 +57,8 @@ public class OrderItemServiceImpl implements OrderItemService {
             cartItemRepository.deleteById(cart_id);
             return orderItemRepository.save(orderItem);
         }else return null;
+
+
     }
 
     @Override
@@ -82,72 +88,102 @@ public class OrderItemServiceImpl implements OrderItemService {
     }
 
     @Override
-    public OrderItem updateStatusApproved(int orderItem_id) {
+    public OrderItemDto updateStatusApproved(int orderItem_id) {
         OrderItem orderItem=orderItemRepository.findById(orderItem_id).get();
-        orderItem.setStatus(Status.Approved.getOrderStatus());
-        return orderItemRepository.save(orderItem);
+        if (orderItem.getStatus().equals(Status.Pending.getOrderStatus()) ){
+            orderItem.setStatus(Status.Approved.getOrderStatus());
+            orderItemRepository.save(orderItem);
+            emailSenderService.sendEmailActive(orderItem.getUser().getEmail(),"Thông báo xác thực đơn hàng #"+orderItem.getId()+ " ShopViet thành công!!",orderItem.toString());
+        }
+        ModelMapper modelMapper=new ModelMapper();
+        return modelMapper.map(orderItem,OrderItemDto.class);
     }
 
     @Override
-    public OrderItem updateStatusShipped(int orderItem_id) {
-        OrderItem orderItem=orderItemRepository.findById(orderItem_id).get();
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User userShipper = userRepository.findUserByName(authentication.getName());
-        orderItem.setUserShipper(userShipper);
-        orderItem.setStatus(Status.Shipped.getOrderStatus());
-        return orderItemRepository.save(orderItem);
-    }
-
-    @Override
-    public OrderItem updateStatusCancelled(int orderItem_id) {
+    public OrderItemDto updateStatusShipped(int orderItem_id) {
         OrderItem orderItem=orderItemRepository.findById(orderItem_id).get();
         if (orderItem.getStatus().equals(Status.Approved.getOrderStatus()) ){
-            return orderItem;
-        }else {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            User userShipper = userRepository.findUserByName(authentication.getName());
+            orderItem.setUserShipper(userShipper);
+            orderItem.setStatus(Status.Shipped.getOrderStatus());
+            orderItemRepository.save(orderItem);
+        }
+        ModelMapper modelMapper=new ModelMapper();
+        return modelMapper.map(orderItem,OrderItemDto.class);
+    }
+
+    @Override
+    public OrderItemDto updateStatusCancelled(int orderItem_id) {
+        OrderItem orderItem=orderItemRepository.findById(orderItem_id).get();
+        if (orderItem.getStatus().equals(Status.Pending.getOrderStatus()) ){
             orderItem.setStatus(Status.Cancelled.getOrderStatus());
-            return orderItemRepository.save(orderItem);
+            orderItemRepository.save(orderItem);
+            ModelMapper modelMapper=new ModelMapper();
+            return modelMapper.map(orderItem,OrderItemDto.class);
+        }else {
+            ModelMapper modelMapper=new ModelMapper();
+            return modelMapper.map(orderItem,OrderItemDto.class);
         }
     }
 
     @Override
-    public OrderItem updateStatusDelivered(int orderItem_id) {
+    public OrderItemDto updateStatusDelivered(int orderItem_id) {
         OrderItem orderItem=orderItemRepository.findById(orderItem_id).get();
         orderItem.setStatus(Status.Delivered.getOrderStatus());
-        return orderItemRepository.save(orderItem);
+        orderItemRepository.save(orderItem);
+        ModelMapper modelMapper=new ModelMapper();
+        return modelMapper.map(orderItem,OrderItemDto.class);
     }
 
     @Override
-    public OrderItem updateStatusOnTheWay(int orderItem_id) {
+    public OrderItemDto updateStatusOnTheWay(int orderItem_id) {
         OrderItem orderItem=orderItemRepository.findById(orderItem_id).get();
         orderItem.setStatus(Status.OnTheWay.getOrderStatus());
-        return orderItemRepository.save(orderItem);
+        orderItemRepository.save(orderItem);
+        ModelMapper modelMapper=new ModelMapper();
+        return modelMapper.map(orderItem,OrderItemDto.class);
     }
 
     @Override
-    public OrderItem updateStatusSuccess(int orderItem_id) {
+    public OrderItemDto updateStatusSuccess(int orderItem_id) {
         OrderItem orderItem=orderItemRepository.findById(orderItem_id).get();
-        orderItem.setStatus(Status.Success.getOrderStatus());
-        return orderItemRepository.save(orderItem);
+        if (orderItem.getStatus().equals(Status.Delivered.getOrderStatus()) ){
+            orderItem.setStatus(Status.Success.getOrderStatus());
+            orderItemRepository.save(orderItem);
+            ModelMapper modelMapper=new ModelMapper();
+            return modelMapper.map(orderItem,OrderItemDto.class);
+        }else {
+            ModelMapper modelMapper=new ModelMapper();
+            return modelMapper.map(orderItem,OrderItemDto.class);
+        }
     }
 
     @Override
-    public List<OrderItem> getAllOrderItemApproved() {
-        return orderItemRepository.findByStatus(Status.Approved.getOrderStatus());
-
+    public List<OrderItemDto> getAllOrderItemApproved() {
+        List<OrderItem> orderItems= orderItemRepository.findByStatus(Status.Approved.getOrderStatus());
+        ModelMapper modelMapper=new ModelMapper();
+        return orderItems.stream().map(orderItem -> modelMapper.map(orderItem,OrderItemDto.class)).collect(Collectors.toList());
     }
 
     @Override
-    public List<OrderItem> getAllOrderItemShipped() {
-        return orderItemRepository.findByStatus(Status.Shipped.getOrderStatus());
+    public List<OrderItemDto> getAllOrderItemShipped() {
+        List<OrderItem> orderItems= orderItemRepository.findByStatus(Status.Shipped.getOrderStatus());
+        ModelMapper modelMapper=new ModelMapper();
+        return orderItems.stream().map(orderItem -> modelMapper.map(orderItem,OrderItemDto.class)).collect(Collectors.toList());
     }
 
     @Override
-    public List<OrderItem> getAllOrderItemOnTheWay() {
-        return orderItemRepository.findByStatus(Status.OnTheWay.getOrderStatus());
+    public List<OrderItemDto> getAllOrderItemOnTheWay() {
+        List<OrderItem> orderItems= orderItemRepository.findByStatus(Status.OnTheWay.getOrderStatus());
+        ModelMapper modelMapper=new ModelMapper();
+        return orderItems.stream().map(orderItem -> modelMapper.map(orderItem,OrderItemDto.class)).collect(Collectors.toList());
     }
 
     @Override
-    public List<OrderItem> getAllOrderItemDelivered() {
-        return orderItemRepository.findByStatus(Status.Delivered.getOrderStatus());
+    public List<OrderItemDto> getAllOrderItemDelivered() {
+        List<OrderItem> orderItems= orderItemRepository.findByStatus(Status.Delivered.getOrderStatus());
+        ModelMapper modelMapper=new ModelMapper();
+        return orderItems.stream().map(orderItem -> modelMapper.map(orderItem,OrderItemDto.class)).collect(Collectors.toList());
     }
 }

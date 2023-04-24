@@ -13,15 +13,15 @@ public interface OrderItemService {
 
 
 
-    OrderItem updateStatusApproved(int orderItem_id);
-    OrderItem updateStatusShipped(int orderItem_id);
-    OrderItem updateStatusCancelled(int orderItem_id);
-    OrderItem updateStatusDelivered(int orderItem_id);
-    OrderItem updateStatusOnTheWay(int orderItem_id);
-    OrderItem updateStatusSuccess(int orderItem_id);
-    List<OrderItem> getAllOrderItemApproved();
-    List<OrderItem> getAllOrderItemShipped();
-    List<OrderItem> getAllOrderItemOnTheWay();
-    List<OrderItem> getAllOrderItemDelivered();
+    OrderItemDto updateStatusApproved(int orderItem_id);
+    OrderItemDto updateStatusShipped(int orderItem_id);
+    OrderItemDto updateStatusCancelled(int orderItem_id);
+    OrderItemDto updateStatusDelivered(int orderItem_id);
+    OrderItemDto updateStatusOnTheWay(int orderItem_id);
+    OrderItemDto updateStatusSuccess(int orderItem_id);
+    List<OrderItemDto> getAllOrderItemApproved();
+    List<OrderItemDto> getAllOrderItemShipped();
+    List<OrderItemDto> getAllOrderItemOnTheWay();
+    List<OrderItemDto> getAllOrderItemDelivered();
 
 }

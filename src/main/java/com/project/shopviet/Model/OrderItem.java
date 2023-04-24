@@ -47,5 +47,12 @@ public class OrderItem {
     @JsonIgnore
     private Review review;
     private Date createDateTime;
-
+    public String toString() {
+        return "Your Order_ID: " +id+
+                "\n\t Products: " + product +
+                "\n\t Quantity: " + quantity +
+                "\n\t Total Price: " + getTotalPrice() +
+                "\n\t Detail order: "+ orderDetail +
+                "\n\t DateTime create: " + createDateTime;
+    }
 }

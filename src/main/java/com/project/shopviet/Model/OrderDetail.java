@@ -44,4 +44,12 @@ public class OrderDetail {
         return totalPrice;
 
     }
+    @Override
+    public String toString() {
+        return "Consignee: " +
+                "\n\t   Name: " + consigneeName +
+                "\n\t   Phone: " + consigneePhone +
+                "\n\t   Email: " + consigneeEmail +
+                "\n\t   Address: "+ consigneeAddress;
+    }
 }

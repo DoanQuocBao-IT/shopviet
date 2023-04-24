@@ -22,7 +22,7 @@ Together, these technologies provide a robust and reliable application that ensu
 
 <H1> Swagger UI
 
-![image](https://user-images.githubusercontent.com/85630559/233825348-dbbe9ab9-f87b-4603-92d6-ea37346d3233.png)
+![image](https://user-images.githubusercontent.com/85630559/233920605-670fe631-df8d-4b21-879b-57a62608b035.png)
 
 <H1> Some main functions: 
 

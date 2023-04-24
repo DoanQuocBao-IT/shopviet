@@ -18,18 +18,6 @@ public class EmailSenderServiceImpl implements EmailSenderService {
     @Override
     public void sendEmailActive(String to, String subject, String message) {
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
-        simpleMailMessage.setFrom("doanquocbao4117@gmail.com");
-        simpleMailMessage.setTo(to);
-        simpleMailMessage.setSubject(subject);
-        simpleMailMessage.setText(message);
-
-        this.mailSender.send(simpleMailMessage);
-    }
-
-    @Override
-    public void sendEmailResetPasswordToken(String to, String subject, String message) {
-        SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
-        simpleMailMessage.setFrom("doanquocbao4117@gmail.com");
         simpleMailMessage.setTo(to);
         simpleMailMessage.setSubject(subject);
         simpleMailMessage.setText(message);

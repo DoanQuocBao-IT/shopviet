@@ -84,7 +84,7 @@ public class ProductServiceImpl implements ProductService {
                 products.sort(Comparator.comparing(Product::getName).reversed());
             } else if (sort.equals("newest")) {
                 products.sort(Comparator.comparing(Product::getCreatedAt).reversed());
-            }else if (sort.equals("soleAsc")) {
+            }else if (sort.equals("soldAsc")) {
                 products.sort(Comparator.comparing(Product::getSold));
             }else if (sort.equals("soldDesc")) {
                 products.sort(Comparator.comparing(Product::getSold).reversed());
@@ -155,6 +155,13 @@ public class ProductServiceImpl implements ProductService {
             System.out.println("Get Product Error: "+e.getMessage());
             return null;
         }
+    }
+
+    @Override
+    public List<ProductDto> findProductByName(String name) {
+        List<Product> products=productRepository.findByNameContainingIgnoreCase(name);
+        ModelMapper modelMapper=new ModelMapper();
+        return products.stream().map(product -> modelMapper.map(product,ProductDto.class)).collect(Collectors.toList());
     }
 
     @Override

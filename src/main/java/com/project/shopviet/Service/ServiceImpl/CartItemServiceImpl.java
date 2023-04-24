@@ -45,28 +45,36 @@ public class CartItemServiceImpl implements CartItemService {
     }
 
     @Override
-    public CartItem updateCart(int id, CartItem cartItem) {
+    public CartDto updateCart(int id, CartItem cartItem) {
         try {
             if (isExistById(id)) {
-
                 CartItem currentCart = cartItemRepository.findById(id).get();
                 currentCart.setQuantity(cartItem.getQuantity());
-                currentCart.setProduct(cartItem.getProduct());
-                currentCart.setUser(cartItem.getUser());
-                if (currentCart.getQuantity()==0 || currentCart.getProduct()==null){
+                if (currentCart.getQuantity()==0){
                     cartItemRepository.deleteById(currentCart.getId());
                 }
                 else {
                     cartItemRepository.save(currentCart);
-
                 }
-
-                return currentCart;
+                ModelMapper modelMapper=new ModelMapper();
+                return modelMapper.map(currentCart,CartDto.class);
             } else return null;
         } catch (IllegalArgumentException e) {
             System.out.println("Update Cart Error: " + e.getMessage());
             return null;
         }
+    }
+
+    @Override
+    public String deleteCartItem(int id) {
+        try {
+            if (isExistById(id)){
+                cartItemRepository.deleteById(id);
+                return "Delete items in the cart success";
+            }
+        }catch (IllegalArgumentException e) {
+            System.out.println("Delete Cart Error: " + e.getMessage());
+        }return null;
     }
 
     @Override

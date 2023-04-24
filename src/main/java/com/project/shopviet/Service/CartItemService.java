@@ -7,8 +7,10 @@ import java.util.List;
 
 public interface CartItemService {
     CartItem addToCart(CartItem cartItem);
+    CartDto updateCart(int id, CartItem cartItem);
+    String deleteCartItem(int id);
     List<CartDto> getAllCartItem();
-    CartItem updateCart(int id, CartItem cartItem);
+
     boolean isExistById(int id);
 
 }

@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -178,7 +179,9 @@ public class UserServiceImpl implements UserService {
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             user.setApproved(true);
-            emailSenderService.sendEmailActive(user.getEmail(),"Thông báo xác thực tài khoản ShopViet thành công!!","Chúng tôi rẩt vui khi trở thành đối tác của bạn");
+            String message="Chúng tôi gửi mail này để xác nhận tài khoản ShopViet của "+user.getFname() +" đã phê duyệt đăng kí tài khoản thành công. Rẩt vui khi trở thành đối tác của bạn và mong bạn ứng xử phù hợp các quy tắc chung tránh tình trạng bị khóa tài khoản.\n" +
+                        "Vui lòng bỏ qua mail này nếu như bạn chưa từng đăng kí tài khoản tại ShopViet";
+            emailSenderService.sendEmailActive(user.getEmail(),"Thông báo xác thực tài khoản ShopViet thành công!!",message);
             userRepository.save(user);
         } else {
             throw new RuntimeException("User not found");

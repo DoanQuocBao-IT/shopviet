@@ -46,6 +46,7 @@ public class BrandServiceImpl implements BrandService {
                 Brand currentBrand=brandRepository.findById(id).get();
                 currentBrand.setName(brand.getName());
                 currentBrand.setImage(brand.getImage());
+                currentBrand.setCategory(brand.getCategory());
                 brandRepository.save(currentBrand);
                 return currentBrand;
             }

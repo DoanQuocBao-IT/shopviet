@@ -14,8 +14,7 @@ import java.util.Set;
 public interface UserRepository extends JpaRepository<User,Integer> {
     @Query(value = "SELECT u.roles FROM User u WHERE u.id=:id")
     Set<Role> getRoleFromUserId(int id);
-    @Query(value = "SELECT u FROM User u WHERE u.username=:userName")
-    Optional<User> findUserByUsername(String userName);
+    Optional<User> getUserByUsername(String userName);
     @Query(value = "SELECT u FROM User u WHERE u.username=:userName")
     User findUserByName(String userName);
     User  findByEmail(String email);

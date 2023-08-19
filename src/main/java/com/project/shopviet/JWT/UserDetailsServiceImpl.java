@@ -17,7 +17,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<User> user=userRepository.findUserByUsername(username);
+        Optional<User> user=userRepository.getUserByUsername(username);
         user.orElseThrow(() -> new RuntimeException("User not found"));
         if (!user.get().isApproved() || user.get().isLocked()) {
             throw new DisabledException("Your account has not been approved yet");

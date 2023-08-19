@@ -21,7 +21,6 @@ public class JwtUserDetails implements UserDetails {
         this.roles = user.getRoles();
     }
     public String getRoles(){
-        System.out.println("current user role: ");
         System.out.println(roles.stream().map(role -> role.getName()).collect(Collectors.toList()));
         return roles.stream().map(role -> role.getName()).collect(Collectors.toList()).get(0);
     }

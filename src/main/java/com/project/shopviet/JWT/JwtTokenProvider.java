@@ -1,9 +1,14 @@
 package com.project.shopviet.JWT;
 
+import com.project.shopviet.Model.User;
+import com.project.shopviet.Repository.UserRepository;
+import com.project.shopviet.Service.UserService;
 import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -13,6 +18,9 @@ import java.util.function.Function;
 @Service
 public class JwtTokenProvider {
     public String secret = "Myshopviet";
+    @Autowired
+    private UserRepository userRepository;
+
 
     public String getUsernameFromToken(String token){
         return getClaimFromToken(token,Claims::getSubject);
@@ -24,17 +32,39 @@ public class JwtTokenProvider {
     private Claims getAllClaimsFromToken(String token){
         return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
     }
-    public String generateToken(UserDetails userDetails){
+    public String generateAccessToken(UserDetails userDetails){
         Map<String,Object>claims=new HashMap<>();
         JwtUserDetails jwtUserDetails=(JwtUserDetails) userDetails;
         String role= jwtUserDetails.getRoles();
-        return doGenerateToken(claims,userDetails.getUsername(),role);
+        return doGenerateAccessToken(claims,userDetails.getUsername(),role);
     }
-    public String doGenerateToken(Map<String, Object> claims,String sub,String role) {
+    public String generateRefreshToken(UserDetails userDetails){
+        Map<String,Object>claims=new HashMap<>();
+        JwtUserDetails jwtUserDetails=(JwtUserDetails) userDetails;
+        String role= jwtUserDetails.getRoles();
+        return doGenerateRefreshToken(claims,userDetails.getUsername(),role);
+    }
+    public String generateNewAccessToken(String token){
+        String username= getUsernameFromToken(token);
+        Optional<User> user=userRepository.getUserByUsername(username);
+        Map<String,Object>claims=new HashMap<>();
+        UserDetails userDetails= new JwtUserDetails(user.get());
+        JwtUserDetails jwtUserDetails=(JwtUserDetails) userDetails;
+        String role= jwtUserDetails.getRoles();
+        return doGenerateAccessToken(claims,userDetails.getUsername(),role);
+    }
+    public String doGenerateAccessToken(Map<String, Object> claims,String username,String role) {
         claims.put("role", role);
-        return Jwts.builder().setClaims(claims).setSubject(sub)
+        return Jwts.builder().setClaims(claims)
+                .setSubject(username)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 360000 * 1000)).signWith(SignatureAlgorithm.HS256, secret).compact();
+                .setExpiration(new Date(System.currentTimeMillis() + 60000*15)).signWith(SignatureAlgorithm.HS256, secret).compact();
+    }
+    public String doGenerateRefreshToken(Map<String, Object> claims,String username,String role) {
+        return Jwts.builder().setClaims(claims)
+                .setSubject(username)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + 60000*60*24*15)).signWith(SignatureAlgorithm.HS256, secret).compact();
     }
 
     public Boolean validateToken(String token,UserDetails userDetails){
@@ -56,16 +86,5 @@ public class JwtTokenProvider {
         Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
         List<String> roles = (List<String>) claims.get("role");
         return roles;
-    }
-    private Set<String> blacklistedTokens = new HashSet<>();
-
-    public void updateTokenValidity(String token, long validitySeconds) {
-        if (validitySeconds == 0) {
-            // Thêm token vào danh sách đen
-            blacklistedTokens.add(token);
-        } else {
-            // Xóa token khỏi danh sách đen
-            blacklistedTokens.remove(token);
-        }
     }
 }

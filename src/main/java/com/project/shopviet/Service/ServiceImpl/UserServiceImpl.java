@@ -57,7 +57,6 @@ public class UserServiceImpl implements UserService {
             user.setLocked(false);
             if (registerDto.getRoleName().equals("buyer")){
                 user.setApproved(true);
-
             }else {
                 user.setApproved(false);
             }
@@ -77,9 +76,9 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public Optional<User> findUserByUsername(String username) {
+    public Optional<User> getUserByUsername(String username) {
         try{
-            return userRepository.findUserByUsername(username);
+            return userRepository.getUserByUsername(username);
         }catch (IllegalArgumentException e){
             System.out.println("Find User Error: "+e.getMessage());
             return null;

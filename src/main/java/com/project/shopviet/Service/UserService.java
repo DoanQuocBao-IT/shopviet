@@ -13,7 +13,7 @@ public interface UserService {
     void addRoleToUser(int userId, int roleId);
     boolean addRegisterUser(RegisterDto registerDto);
     String addRoleUser(String username,String name);
-    Optional<User> findUserByUsername(String username);
+    Optional<User> getUserByUsername(String username);
     List<User> findUserByRole(Role role);
     List<User> findByRolesIn(Set<Role> roles);
     String deleteUser(int id);

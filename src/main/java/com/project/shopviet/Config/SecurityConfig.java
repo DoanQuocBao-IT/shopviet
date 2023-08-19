@@ -55,6 +55,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/admin/**").hasAuthority("admin")
                 .antMatchers("/api/seller/**").hasAuthority("seller")
                 .antMatchers("/api/buyer/**").hasAuthority("buyer")
+                .antMatchers("/api/user/**").authenticated()
+
                 .anyRequest().authenticated()
                 .and()
                 .sessionManagement()

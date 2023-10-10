@@ -2,6 +2,7 @@ package com.project.shopviet.Service.ServiceImpl;
 
 import com.project.shopviet.DTO.ProductDetailDto;
 import com.project.shopviet.DTO.ProductDto;
+import com.project.shopviet.DTO.response.PagedProductResponse;
 import com.project.shopviet.Model.Product;
 import com.project.shopviet.Model.User;
 import com.project.shopviet.Repository.ProductRepository;
@@ -9,6 +10,10 @@ import com.project.shopviet.Repository.UserRepository;
 import com.project.shopviet.Service.ProductService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -72,24 +77,52 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<ProductDto> getAllProduct(String sort) {
+    public PagedProductResponse getAllProduct(String sort, int perPage, int currentPage) {
         try{
-            List<Product> products=productRepository.findAll();
-            ModelMapper modelMapper=new ModelMapper();
-            if (sort.equals("priceAsc")) {
-                products.sort(Comparator.comparing(Product::getPrice));
-            } else if (sort.equals("priceDesc")) {
-                products.sort(Comparator.comparing(Product::getPrice).reversed());
-            } else if (sort.equals("nameAsc")) {
-                products.sort(Comparator.comparing(Product::getName).reversed());
-            } else if (sort.equals("newest")) {
-                products.sort(Comparator.comparing(Product::getCreatedAt).reversed());
-            }else if (sort.equals("soldAsc")) {
-                products.sort(Comparator.comparing(Product::getSold));
-            }else if (sort.equals("soldDesc")) {
-                products.sort(Comparator.comparing(Product::getSold).reversed());
+            Sort sorting;
+            switch (sort) {
+                case "priceAsc":
+                    sorting = Sort.by("price").ascending();
+                    break;
+                case "priceDesc":
+                    sorting = Sort.by("price").descending();
+                    break;
+                case "nameAsc":
+                    sorting = Sort.by("name").ascending();
+                    break;
+                case "nameDesc":
+                    sorting = Sort.by("name").descending();
+                    break;
+                case "newest":
+                    sorting = Sort.by("createdAt").descending();
+                    break;
+                case "soldAsc":
+                    sorting = Sort.by("sold").ascending();
+                    break;
+                case "soldDesc":
+                    sorting = Sort.by("sold").descending();
+                    break;
+                default:
+                    sorting = Sort.unsorted();  // Hoặc bạn có thể đặt một sắp xếp mặc định tại đây
+                    break;
             }
-            return products.stream().map(product -> modelMapper.map(product,ProductDto.class)).collect(Collectors.toList());
+            Pageable pageable;
+            if (sort != null) {
+                pageable = PageRequest.of(currentPage - 1, perPage, sorting); // currentPage - 1 vì trang trong Spring Data JPA bắt đầu từ 0
+            } else {
+                pageable = PageRequest.of(currentPage - 1, perPage);
+            }
+            ModelMapper modelMapper=new ModelMapper();
+            // Lấy trang sản phẩm
+            Page<Product> productPage = productRepository.findAll(pageable);
+            List<ProductDto> productDtoPage=productPage.stream().map(product -> modelMapper.map(product,ProductDto.class)).collect(Collectors.toList());
+            return PagedProductResponse.builder()
+                    .total_page(productPage.getTotalPages())
+                    .current_page(currentPage)
+                    .per_page(perPage)
+                    .total_product(productPage.getTotalElements())
+                    .products(productDtoPage)
+                    .build();
         }catch (IllegalArgumentException e){
             System.out.println("Get All Product Error: "+e.getMessage());
             return null;

@@ -1,9 +1,11 @@
 package com.project.shopviet.Controller;
 
 import com.project.shopviet.DTO.*;
+import com.project.shopviet.DTO.response.PagedProductResponse;
 import com.project.shopviet.Model.User;
 import com.project.shopviet.Service.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,13 +23,27 @@ public class GuestController {
     @Autowired
     UserService userService;
     @GetMapping("/allCat")
-    public List<CategoryDto> getAllCategory(){
-        return categoryService.getAllCategory();
+    public ResponseEntity<?> getAllCategory(){
+        try {
+            List<CategoryDto> category=categoryService.getAllCategory();
+            return new ResponseEntity<>(category, HttpStatus.OK);
+        }
+        catch (Exception e){
+            ErrorResponse errorResponse=new ErrorResponse("NOT_FOUND","Category not found");
+            return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+        }
     }
 
     @GetMapping("/allBrand")
-    public List<BrandDto> getAllBrand(){
-        return brandService.getAllBrand();
+    public ResponseEntity<?> getAllBrand(){
+        try {
+            List<BrandDto> brand=brandService.getAllBrand();
+            return new ResponseEntity<>(brand, HttpStatus.OK);
+        }
+        catch (Exception e){
+            ErrorResponse errorResponse=new ErrorResponse("NOT_FOUND","Brand not found");
+            return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+        }
     }
     @GetMapping("/brand/cat{category_id}")
     public List<BrandDto> getAllBrandForCategoryId(@PathVariable int category_id){
@@ -38,8 +54,8 @@ public class GuestController {
         return brandService.getAllBrandProduct();
     }
     @GetMapping("/allProd")
-    public List<ProductDto> getAllProduct(@RequestParam String sort){
-        return productService.getAllProduct(sort);
+    public PagedProductResponse getAllProduct(@RequestParam String sort, @RequestParam int per_page, @RequestParam int current_page){
+        return productService.getAllProduct(sort,per_page,current_page);
     }
     @GetMapping("/product")
     public List<ProductDto> findProductByName(@RequestParam String name){

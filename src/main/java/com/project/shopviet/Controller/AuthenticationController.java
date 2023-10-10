@@ -2,6 +2,7 @@ package com.project.shopviet.Controller;
 
 import com.project.shopviet.DTO.AccessToken;
 import com.project.shopviet.DTO.ErrorResponse;
+import com.project.shopviet.DTO.RefreshToken;
 import com.project.shopviet.DTO.RegisterDto;
 import com.project.shopviet.JWT.JwtRequest;
 import com.project.shopviet.JWT.JwtResponse;
@@ -70,9 +71,9 @@ public class AuthenticationController {
             return new ResponseEntity(errorResponse,HttpStatus.BAD_REQUEST);
         }
     }
-    @GetMapping("/refresh-token")
-    public ResponseEntity<?> refreshToken(@RequestBody String refreshToken){
-        final String accessToken = jwtTokenProvider.generateNewAccessToken(refreshToken);
+    @PostMapping("/refresh-token")
+    public ResponseEntity<?> refreshToken(@RequestBody RefreshToken refreshToken){
+        final String accessToken = jwtTokenProvider.generateNewAccessToken(refreshToken.getRefreshToken());
         return ResponseEntity.ok(new AccessToken(accessToken));
     }
     @PostMapping("/logout")

@@ -1,5 +1,7 @@
 package com.project.shopviet.JWT;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,19 +23,29 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private UserDetailsServiceImpl userDetailsService;
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        final String authorizationHeader=request.getHeader("Authorization");
-        String username=null;
-        String jwt=null;
-        if (authorizationHeader!=null && authorizationHeader.startsWith("Bearer ")){
-            jwt = authorizationHeader.substring(7);
-            username=tokenProvider.getUsernameFromToken(jwt);
-        }if (username!=null && SecurityContextHolder.getContext().getAuthentication()==null){
-            UserDetails userDetails=this.userDetailsService.loadUserByUsername(username);
-            if (tokenProvider.validateToken(jwt,userDetails)){
-                UsernamePasswordAuthenticationToken authenticationToken=new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
-                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+        try {
+            final String authorizationHeader = request.getHeader("Authorization");
+            String username = null;
+            String jwt = null;
+            if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+                jwt = authorizationHeader.substring(7);
+                username = tokenProvider.getUsernameFromToken(jwt);
             }
+            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+                if (tokenProvider.validateToken(jwt, userDetails)) {
+                    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                }
+            }
+        }catch (ExpiredJwtException e) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        }catch (JwtException e){
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        }
+        catch (Exception e){
+            System.out.println("Error: "+e.getMessage());
         }
         filterChain.doFilter(request,response);
     }

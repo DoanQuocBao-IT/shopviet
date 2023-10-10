@@ -7,6 +7,7 @@ import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
@@ -17,7 +18,12 @@ import java.util.function.Function;
 @Slf4j
 @Service
 public class JwtTokenProvider {
-    public String secret = "Myshopviet";
+    @Value("${jwt_secret}")
+    private String secret;
+    @Value("${jwt_access_token_expiration_milliseconds}")
+    private long jwtAccessTokenExpirationDate;
+    @Value("${jwt_refresh_token_expiration_milliseconds}")
+    private long jwtRefreshTokenExpirationDate;
     @Autowired
     private UserRepository userRepository;
 
@@ -58,13 +64,13 @@ public class JwtTokenProvider {
         return Jwts.builder().setClaims(claims)
                 .setSubject(username)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 60000*15)).signWith(SignatureAlgorithm.HS256, secret).compact();
+                .setExpiration(new Date(System.currentTimeMillis() + jwtAccessTokenExpirationDate)).signWith(SignatureAlgorithm.HS256, secret).compact();
     }
     public String doGenerateRefreshToken(Map<String, Object> claims,String username,String role) {
         return Jwts.builder().setClaims(claims)
                 .setSubject(username)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 60000*60*24*15)).signWith(SignatureAlgorithm.HS256, secret).compact();
+                .setExpiration(new Date(System.currentTimeMillis() + jwtRefreshTokenExpirationDate)).signWith(SignatureAlgorithm.HS256, secret).compact();
     }
 
     public Boolean validateToken(String token,UserDetails userDetails){

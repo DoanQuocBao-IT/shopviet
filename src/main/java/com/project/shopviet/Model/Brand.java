@@ -35,4 +35,21 @@ public class Brand {
     @JoinColumn(name = "brand_id")
     @JsonIgnoreProperties("brand")
     private List<Product> products;
+    @Transient
+    private int sold;
+    @Transient
+    private int total_product;
+    public int getSold() {
+        int sold = 0;
+        for (Product product : products) {
+            sold += product.getSold();
+        }
+        return sold;
+    }
+    public int getTotal_product() {
+        if (products == null) {
+            return 0;
+        }
+        return products.size();
+    }
 }

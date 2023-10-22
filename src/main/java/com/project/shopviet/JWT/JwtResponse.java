@@ -8,19 +8,21 @@ import java.util.Set;
 
 @Getter
 public class JwtResponse {
+    private int id;
     private String fullName;
     private String image;
-    private Set<Role> role;
+    private Set<Role> roles;
 
     private final String accessToken;
     private String refreshToken;
 
-    public JwtResponse(String accessToken,String refreshToken, String fullName, String image, Set<Role> role) {
+    public JwtResponse(int id,String accessToken,String refreshToken, String fullName, String image, Set<Role> roles) {
+        this.id=id;
         this.accessToken=accessToken;
         this.refreshToken=refreshToken;
         this.fullName = fullName;
         this.image = image;
-        this.role = role;
+        this.roles = roles;
     }
     public JwtResponse(String accessToken) {
         this.accessToken = accessToken;

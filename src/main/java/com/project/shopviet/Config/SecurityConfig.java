@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -17,6 +18,8 @@ import org.springframework.security.web.access.channel.ChannelProcessingFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.stereotype.Service;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -50,6 +53,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/webjars/**").permitAll()
                 .antMatchers("/v2/**").permitAll()
 
+                .antMatchers("/images/**").permitAll()
                 .antMatchers("/api/auth/**").permitAll()
                 .antMatchers("/api/shopviet/**").permitAll()
                 .antMatchers("/api/admin/**").hasAuthority("admin")

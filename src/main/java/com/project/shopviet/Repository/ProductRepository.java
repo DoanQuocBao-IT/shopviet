@@ -22,6 +22,7 @@ public interface ProductRepository extends JpaRepository<Product,Integer> {
     List<Product> getProductByCategoryId(int id);
     @Query(value = "select prod from Product prod where prod.userSeller.id=:seller_id")
     List<Product> getProductBySellerId(int seller_id);
+    Page<Product> getProductsUserSellerByUserSellerId(int seller_id, Pageable pageable);
     List<Product> findByNameContainingIgnoreCase(String name);
     Page<Product> findAll(Pageable pageable);
 }

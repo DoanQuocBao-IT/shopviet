@@ -1,6 +1,7 @@
 package com.project.shopviet.Service.ServiceImpl;
 
 import com.project.shopviet.DTO.CategoryDto;
+import com.project.shopviet.DTO.response.CategoryResponse;
 import com.project.shopviet.Model.Category;
 import com.project.shopviet.Repository.CategoryRepository;
 import com.project.shopviet.Service.CategoryService;
@@ -56,7 +57,19 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public List<CategoryDto> getAllCategory() {
+    public List<CategoryResponse> getAllCategory() {
+        try{
+            List<Category> categories=categoryRepository.findAll();
+            ModelMapper modelMapper=new ModelMapper();
+            return categories.stream().map(category -> modelMapper.map(category,CategoryResponse.class)).collect(Collectors.toList());
+        }catch (IllegalArgumentException e){
+            System.out.println("Get All Category Error: "+e.getMessage());
+            return null;
+        }
+    }
+
+    @Override
+    public List<CategoryDto> getAllCategoryDto() {
         try{
             List<Category> categories=categoryRepository.findAll();
             ModelMapper modelMapper=new ModelMapper();

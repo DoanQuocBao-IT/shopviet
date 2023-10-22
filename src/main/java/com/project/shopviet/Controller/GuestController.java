@@ -1,7 +1,7 @@
 package com.project.shopviet.Controller;
 
 import com.project.shopviet.DTO.*;
-import com.project.shopviet.DTO.response.PagedProductResponse;
+import com.project.shopviet.DTO.response.*;
 import com.project.shopviet.Model.User;
 import com.project.shopviet.Service.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,16 +22,22 @@ public class GuestController {
     ProductService productService;
     @Autowired
     UserService userService;
+    @Autowired
+    ImageService imageService;
     @GetMapping("/allCat")
     public ResponseEntity<?> getAllCategory(){
         try {
-            List<CategoryDto> category=categoryService.getAllCategory();
+            List<CategoryResponse> category=categoryService.getAllCategory();
             return new ResponseEntity<>(category, HttpStatus.OK);
         }
         catch (Exception e){
             ErrorResponse errorResponse=new ErrorResponse("NOT_FOUND","Category not found");
             return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
         }
+    }
+    @GetMapping("/all/category")
+    public List<CategoryDto> getAllCategoryDto(){
+        return categoryService.getAllCategoryDto();
     }
 
     @GetMapping("/allBrand")
@@ -45,6 +51,10 @@ public class GuestController {
             return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
         }
     }
+    @GetMapping("/best-brand")
+    public List<BrandResponse> get5BrandBestSeller(){
+        return brandService.get5BrandBestSeller();
+    }
     @GetMapping("/brand/cat{category_id}")
     public List<BrandDto> getAllBrandForCategoryId(@PathVariable int category_id){
         return brandService.getBrandByCategoryId(category_id);
@@ -52,6 +62,10 @@ public class GuestController {
     @GetMapping("/allBrandProduct")
     public List<BrandProductDto> getAllBrandProduct(){
         return brandService.getAllBrandProduct();
+    }
+    @GetMapping("/all/brand-product/category/{name}")
+    public CategoryIdBrandResponse getAllBrandProductByCategoryId(@PathVariable String name){
+        return brandService.getAllBrandProductByCategoryId(name);
     }
     @GetMapping("/allProd")
     public PagedProductResponse getAllProduct(@RequestParam String sort, @RequestParam int per_page, @RequestParam int current_page){
@@ -73,9 +87,13 @@ public class GuestController {
     public List<ProductDto> getAllProductInBrand(@PathVariable int id){
         return productService.getProductForBrand(id);
     }
-    @GetMapping("/allProd/seller/{seller_id}")
-    public List<ProductDto> getAllProductFromSeller(@PathVariable int seller_id){
-        return productService.getProductBySeller(seller_id);
+    @GetMapping("/best-product/brand/{id}")
+    public BrandProductResponse get3ProductBestSellerForBrand(@PathVariable int id){
+        return productService.get3ProductBestSellerForBrand(id);
+    }
+    @GetMapping("/products/seller/{seller_id}")
+    public PagedProductResponse getAllProductFromSeller(@PathVariable int seller_id, @RequestParam int per_page, @RequestParam int current_page){
+        return productService.getProductBySeller(seller_id,per_page,current_page);
     }
     @GetMapping("/allImageProd")
     public List<String> getAllImageProduct(){
@@ -89,5 +107,10 @@ public class GuestController {
     @GetMapping("/username/{name}")
     Optional<User> getUserById(@PathVariable String  name){
         return userService.getUserByUsername(name);
+    }
+    @PostMapping("/upload")
+    public ResponseEntity<String> uploadImage(@RequestBody String base64String) {
+        String imagePath = imageService.saveImage(base64String);
+        return ResponseEntity.ok(imagePath);
     }
 }

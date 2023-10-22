@@ -2,6 +2,7 @@ package com.project.shopviet.Controller;
 
 import com.project.shopviet.DTO.MessageDto;
 import com.project.shopviet.DTO.OrderItemDto;
+import com.project.shopviet.DTO.request.ProductRequest;
 import com.project.shopviet.Model.*;
 import com.project.shopviet.Service.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +28,8 @@ public class SellerController {
     @Autowired
     MessageService messageService;
 
-    @PostMapping("/addProd")
-    public Product addProduct(@RequestBody Product product){
+    @PostMapping("/product")
+    public Product addProduct(@RequestBody ProductRequest product){
         return productService.addProductBySeller(product);
     }
     @DeleteMapping("/delProd/{id}")

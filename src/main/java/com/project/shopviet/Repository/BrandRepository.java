@@ -10,6 +10,6 @@ import java.util.stream.Collectors;
 
 @Repository
 public interface BrandRepository extends JpaRepository<Brand,Integer> {
-    @Query(value = "select b from Brand b where b.category.id=:id")
     List<Brand> getBrandByCategoryId(int id);
+    List<Brand> getBrandByCategoryName(String name);
 }

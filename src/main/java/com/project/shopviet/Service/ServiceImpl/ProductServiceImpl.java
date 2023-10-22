@@ -2,11 +2,18 @@ package com.project.shopviet.Service.ServiceImpl;
 
 import com.project.shopviet.DTO.ProductDetailDto;
 import com.project.shopviet.DTO.ProductDto;
+import com.project.shopviet.DTO.ProductImageDto;
+import com.project.shopviet.DTO.UserSellerDto;
+import com.project.shopviet.DTO.request.ProductRequest;
+import com.project.shopviet.DTO.response.BrandProductResponse;
 import com.project.shopviet.DTO.response.PagedProductResponse;
+import com.project.shopviet.Model.Brand;
 import com.project.shopviet.Model.Product;
 import com.project.shopviet.Model.User;
+import com.project.shopviet.Repository.BrandRepository;
 import com.project.shopviet.Repository.ProductRepository;
 import com.project.shopviet.Repository.UserRepository;
+import com.project.shopviet.Service.ImageService;
 import com.project.shopviet.Service.ProductService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,12 +34,24 @@ public class ProductServiceImpl implements ProductService {
     ProductRepository productRepository;
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    BrandRepository brandRepository;
+    @Autowired
+    ImageService imageService;
     @Override
-    public Product addProductBySeller(Product product) {
+    public Product addProductBySeller(ProductRequest productRequest) {
         try{
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User userSeller = userRepository.findUserByName(authentication.getName());
+            Product product=new Product();
             product.setUserSeller(userSeller);
+            product.setName(productRequest.getName());
+            product.setDescription(productRequest.getDescription());
+            product.setInventory(productRequest.getQuantity());
+            product.setPrice(productRequest.getPrice());
+            Brand brand= brandRepository.findById(productRequest.getBrand_id()).get();
+            product.setBrand(brand);
+            product.setImage(imageService.saveImage(productRequest.getImage()));
             product.setCreatedAt(new Date());
             return productRepository.save(product);
         }catch (IllegalArgumentException e){
@@ -169,6 +188,23 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public BrandProductResponse get3ProductBestSellerForBrand(int brand_id) {
+        List<Product> products=productRepository.getProductByBrandId(brand_id);
+        ModelMapper modelMapper=new ModelMapper();
+        List<ProductImageDto> productImageDtos=new ArrayList<>();
+        for (int i=0;i<1;i++){
+            productImageDtos.add(modelMapper.map(products.get(i),ProductImageDto.class));
+        }
+        return BrandProductResponse.builder()
+                .brand_id(brand_id)
+                .name(products.get(0).getBrand().getName())
+                .image(products.get(0).getBrand().getImage())
+                .user_seller(modelMapper.map(products.get(0).getUserSeller(), UserSellerDto.class))
+                .products(productImageDtos)
+                .build();
+    }
+
+    @Override
     public List<String> getAllImageProduct() {
         try{
             return (List<String>) productRepository.getAllImageProduct();
@@ -179,11 +215,19 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<ProductDto> getProductBySeller(int seller_id) {
+    public PagedProductResponse getProductBySeller(int seller_id, int perPage, int currentPage) {
         try {
-            List<Product> products=productRepository.getProductBySellerId(seller_id);
+            Pageable pageable=PageRequest.of(currentPage-1,perPage);
+            Page<Product> productPage=productRepository.getProductsUserSellerByUserSellerId(seller_id,pageable);
             ModelMapper modelMapper=new ModelMapper();
-            return products.stream().map(product -> modelMapper.map(product,ProductDto.class)).collect(Collectors.toList());
+            List<ProductDto> productDtoPage=productPage.stream().map(product -> modelMapper.map(product,ProductDto.class)).collect(Collectors.toList());
+            return PagedProductResponse.builder()
+                    .total_page(productPage.getTotalPages())
+                    .current_page(currentPage)
+                    .per_page(perPage)
+                    .total_product(productPage.getTotalElements())
+                    .products(productDtoPage)
+                    .build();
         }catch (IllegalArgumentException e){
             System.out.println("Get Product Error: "+e.getMessage());
             return null;

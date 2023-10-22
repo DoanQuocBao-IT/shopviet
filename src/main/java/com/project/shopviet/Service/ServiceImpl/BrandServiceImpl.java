@@ -2,9 +2,13 @@ package com.project.shopviet.Service.ServiceImpl;
 
 import com.project.shopviet.DTO.BrandDto;
 import com.project.shopviet.DTO.BrandProductDto;
+import com.project.shopviet.DTO.response.BrandProductResponse;
+import com.project.shopviet.DTO.response.BrandResponse;
+import com.project.shopviet.DTO.response.CategoryIdBrandResponse;
 import com.project.shopviet.Model.Brand;
 import com.project.shopviet.Repository.BrandRepository;
 import com.project.shopviet.Service.BrandService;
+import com.project.shopviet.Service.ProductService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +21,8 @@ import java.util.stream.Collectors;
 public class BrandServiceImpl implements BrandService {
     @Autowired
     BrandRepository brandRepository;
+    @Autowired
+    ProductService productService;
 
     @Override
     public Brand addBrand(Brand brand) {
@@ -70,10 +76,26 @@ public class BrandServiceImpl implements BrandService {
     }
 
     @Override
+    public List<BrandResponse> get5BrandBestSeller() {
+        List<Brand> brands=brandRepository.findAll();
+        ModelMapper modelMapper=new ModelMapper();
+        return brands.stream().map(brand -> modelMapper.map(brand,BrandResponse.class)).collect(Collectors.toList());
+    }
+
+    @Override
     public List<BrandProductDto> getAllBrandProduct() {
         List<Brand> brands=brandRepository.findAll();
         ModelMapper modelMapper=new ModelMapper();
         return brands.stream().map(brand -> modelMapper.map(brand,BrandProductDto.class)).collect(Collectors.toList());
+    }
+
+    @Override
+    public CategoryIdBrandResponse getAllBrandProductByCategoryId(String name) {
+        List<BrandProductResponse> brandProductResponses=brandRepository.getBrandByCategoryName(name).stream().map(brand ->
+                productService.get3ProductBestSellerForBrand(brand.getId())).collect(Collectors.toList());
+        return CategoryIdBrandResponse.builder()
+                .name(name)
+                .brand(brandProductResponses).build();
     }
 
     @Override

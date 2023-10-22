@@ -52,7 +52,7 @@ public class AuthenticationController {
             final String refreshToken = jwtTokenProvider.generateRefreshToken(userDetails);
 
             Optional<User> user=userService.getUserByUsername(jwtRequest.getUsername());
-            return ResponseEntity.ok(new JwtResponse(accessToken,refreshToken, user.get().getFname(),user.get().getImage(),user.get().getRoles()));
+            return ResponseEntity.ok(new JwtResponse(user.get().getId(),accessToken,refreshToken, user.get().getFname(),user.get().getImage(),user.get().getRoles()));
         } catch (BadCredentialsException e) {
             ErrorResponse errorResponse=new ErrorResponse("UNAUTHORIZED","Incorrect username or password");
             return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);

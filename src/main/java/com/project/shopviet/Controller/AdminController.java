@@ -3,6 +3,7 @@ package com.project.shopviet.Controller;
 import com.project.shopviet.DTO.MessageDto;
 import com.project.shopviet.DTO.OrderItemDto;
 import com.project.shopviet.DTO.OrderUserDto;
+import com.project.shopviet.DTO.UserDto;
 import com.project.shopviet.Model.*;
 import com.project.shopviet.Service.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,7 +66,6 @@ public class AdminController {
     }
 
 
-
     @GetMapping("/all/{role}")
     public List<User> getUserByRolee(@PathVariable String role){
         Role roleUser=roleService.findRoleByName(role);
@@ -117,10 +117,7 @@ public class AdminController {
     public List<User> getAllUserBlock(){
         return userService.getAllUserBlock();
     }
-    @GetMapping("/profile")
-    User getProfileAdmin(){
-        return userService.getProfile();
-    }
+
     @PostMapping("/message/user/{receiver_id}")
     Messages sendMessage(@RequestBody Messages messages,@PathVariable int receiver_id){
         return messageService.sendMessage(messages,receiver_id);

@@ -24,6 +24,8 @@ public class GuestController {
     UserService userService;
     @Autowired
     ImageService imageService;
+    @Autowired
+    FollowService followService;
     @GetMapping("/allCat")
     public ResponseEntity<?> getAllCategory(){
         try {
@@ -35,7 +37,7 @@ public class GuestController {
             return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
         }
     }
-    @GetMapping("/all/category")
+    @GetMapping("/categories")
     public List<CategoryDto> getAllCategoryDto(){
         return categoryService.getAllCategoryDto();
     }
@@ -75,8 +77,12 @@ public class GuestController {
     public List<ProductDto> findProductByName(@RequestParam String name){
         return productService.findProductByName(name);
     }
-    @GetMapping("/Product/{id}")
-    public Optional<ProductDetailDto> getProductById(@PathVariable int id){
+    @GetMapping("/products/id")
+    public List<ProductsIdResponse> getAllProductId(){
+        return productService.getAllProductId();
+    }
+    @GetMapping("/product/{id}")
+    public ProductDetailDto getProductById(@PathVariable int id){
         return productService.findProductById(id);
     }
     @GetMapping("/allProdInCat/{id}")
@@ -112,5 +118,13 @@ public class GuestController {
     public ResponseEntity<String> uploadImage(@RequestBody String base64String) {
         String imagePath = imageService.saveImage(base64String);
         return ResponseEntity.ok(imagePath);
+    }
+    @GetMapping("/followers/user/{id}")
+    int countFollow(@PathVariable int id){
+        return followService.countFollowers(id);
+    }
+    @GetMapping("/followings/user/{id}")
+    int countFollowings(@PathVariable int id){
+        return followService.countFollowings(id);
     }
 }

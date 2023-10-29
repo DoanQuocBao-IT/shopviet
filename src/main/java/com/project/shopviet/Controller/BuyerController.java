@@ -1,9 +1,9 @@
 package com.project.shopviet.Controller;
 
-import com.project.shopviet.DTO.CartDto;
-import com.project.shopviet.DTO.MessageDto;
-import com.project.shopviet.DTO.OrderItemDto;
-import com.project.shopviet.DTO.OrderUserDto;
+import com.project.shopviet.DTO.*;
+import com.project.shopviet.DTO.request.ItemCartRequest;
+import com.project.shopviet.DTO.response.CartResponse;
+import com.project.shopviet.DTO.response.Response;
 import com.project.shopviet.Model.*;
 import com.project.shopviet.Service.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,35 +16,33 @@ import java.util.List;
 @CrossOrigin(origins = {"*"})
 public class BuyerController {
     @Autowired
-    UserService userService;
-    @Autowired
-    FollowService followService;
-    @Autowired
     OrderService orderService;
     @Autowired
     OrderItemService orderItemService;
     @Autowired
     CartItemService cartItemService;
     @Autowired
+    CartService cartService;
+    @Autowired
     ReviewService reviewService;
     @Autowired
     MessageService messageService;
-    @PostMapping("/addCart/add-item")
-    public CartItem addToCart(@RequestBody CartItem cartItem) {
-        return cartItemService.addToCart(cartItem);
+    @PostMapping("/cart")
+    public Response addToCart(@RequestBody ItemCartRequest request) {
+        return cartItemService.addToCart(request);
     }
 
-    @PutMapping("/putCart/{id}/update-item")
-    public CartDto updateToCart(@RequestBody CartItem cartItem, @PathVariable int id){
-        return cartItemService.updateCart(id,cartItem);
+    @PutMapping("/cart")
+    public Response updateToCart(@RequestBody ItemCartRequest request){
+        return cartItemService.updateCart(request);
     }
-    @DeleteMapping("/delCart/{id}")
-    public String deleteCart(@PathVariable int id){
+    @DeleteMapping("/cart/product/{id}")
+    public Response deleteCart(@PathVariable int id){
         return cartItemService.deleteCartItem(id);
     }
     @GetMapping("/cart")
-    public List<CartDto> getCartItems() {
-        return cartItemService.getAllCartItem();
+    public CartResponse getCartItems() {
+        return cartService.getCart();
     }
     @PostMapping("/order{order_id}/addcart{cart_id}_item")
     public OrderItem addToOrderItem(@PathVariable int order_id,@PathVariable int cart_id){
@@ -74,25 +72,6 @@ public class BuyerController {
     @PostMapping("/review/orderItem{orderItem_id}")
     Review addReview(@RequestBody Review review,@PathVariable int orderItem_id){
         return reviewService.addReview(orderItem_id,review);
-    }
-
-
-    @GetMapping("/follow/user{id}")
-    Follow addFollow(@PathVariable int id){
-        return followService.addFollow(id);
-    }
-    @GetMapping("/delfollow/user{id}")
-    void deleteFollow(@PathVariable int id){
-        followService.deteleFollow(id);
-    }
-    @GetMapping("/countfollow/user{id}")
-    int countFollow(@PathVariable int id){
-        return followService.countFollow(id);
-    }
-
-    @GetMapping("/profile")
-    User getProfileBuyer(){
-        return userService.getProfile();
     }
 
     @PostMapping("/message/user/{receiver_id}")

@@ -1,9 +1,11 @@
 package com.project.shopviet.Service.ServiceImpl;
 
 import com.project.shopviet.DTO.RegisterDto;
+import com.project.shopviet.DTO.UserDto;
 import com.project.shopviet.DTO.UserSellerDto;
 import com.project.shopviet.Model.Role;
 import com.project.shopviet.Model.User;
+import com.project.shopviet.Repository.FollowRepository;
 import com.project.shopviet.Repository.RoleRepository;
 import com.project.shopviet.Repository.UserRepository;
 import com.project.shopviet.Service.EmailSenderService;
@@ -31,6 +33,8 @@ public class UserServiceImpl implements UserService {
     private BCryptPasswordEncoder passwordEncoder;
     @Autowired
     private EmailSenderService emailSenderService;
+    @Autowired
+    private FollowRepository followRepository;
 
     @Transactional
     public void addRoleToUser(int userId, int roleId) {
@@ -222,8 +226,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getProfile() {
+    public UserDto getProfile() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return userRepository.findUserByName(authentication.getName());
+        User user = userRepository.findUserByName(authentication.getName());
+        int followers = followRepository.countFollowByFollowedUserId(user.getId());
+        int followings = followRepository.countFollowByUserId(user.getId());
+        return UserDto.builder()
+                .id(user.getId())
+                .fname(user.getFname())
+                .email(user.getEmail())
+                .phone(user.getPhone())
+                .image(user.getImage())
+                .birthday(user.getBirthday())
+                .sex(user.getSex())
+                .follower(String.valueOf(followers))
+                .following(String.valueOf(followings))
+                .build();
     }
 }

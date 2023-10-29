@@ -2,6 +2,7 @@ package com.project.shopviet.Controller;
 
 import com.project.shopviet.DTO.MessageDto;
 import com.project.shopviet.DTO.OrderItemDto;
+import com.project.shopviet.DTO.UserDto;
 import com.project.shopviet.Model.Messages;
 import com.project.shopviet.Model.OrderItem;
 import com.project.shopviet.Model.User;
@@ -17,8 +18,6 @@ import java.util.List;
 @RequestMapping("/api/shipper")
 @CrossOrigin(origins = {"*"})
 public class ShipperController {
-    @Autowired
-    UserService userService;
     @Autowired
     OrderItemService orderItemService;
     @Autowired
@@ -55,10 +54,6 @@ public class ShipperController {
         return orderItemService.updateStatusDelivered(id);
     }
 
-    @GetMapping("/profile")
-    User getProfileShipper(){
-        return userService.getProfile();
-    }
     @PostMapping("/message/user/{receiver_id}")
     Messages sendMessage(@RequestBody Messages messages,@PathVariable int receiver_id){
         return messageService.sendMessage(messages,receiver_id);

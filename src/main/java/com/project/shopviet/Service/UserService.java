@@ -1,6 +1,7 @@
 package com.project.shopviet.Service;
 
 import com.project.shopviet.DTO.RegisterDto;
+import com.project.shopviet.DTO.UserDto;
 import com.project.shopviet.DTO.UserSellerDto;
 import com.project.shopviet.Model.Role;
 import com.project.shopviet.Model.User;
@@ -28,5 +29,5 @@ public interface UserService {
     void unBlockSellerOrShipper(int id);
     List<User> getAllUserApprove();
     List<User> getAllUserBlock();
-    User getProfile();
+    UserDto getProfile();
 }

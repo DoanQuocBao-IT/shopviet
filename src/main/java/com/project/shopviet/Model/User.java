@@ -37,6 +37,9 @@ public class User {
     @NotBlank(message = "Phone is required")
     private String phone;
     private String image;
+    private String birthday;
+    private String sex;
+    private String address;
     @ManyToMany(fetch =FetchType.EAGER,cascade = CascadeType.ALL)
     @JoinTable(
             name = "user_role",

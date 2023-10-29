@@ -9,7 +9,8 @@ import java.util.List;
 
 @Repository
 public interface CartItemRepository extends JpaRepository<CartItem,Integer> {
-    @Query(value = "SELECT c FROM CartItem c WHERE c.user.id=:buyer_id")
-    List<CartItem> getCartByBuyerId(int buyer_id);
+    boolean existsByUser_IdAndProduct_Id(int user_id,int product_id);
+    CartItem getCartItemByUser_IdAndProduct_Id(int user_id,int product_id);
+    List<CartItem> getCartItemsByProduct_UserSeller_Id(int seller_id);
 }
 

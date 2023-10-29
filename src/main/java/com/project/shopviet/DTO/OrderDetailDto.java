@@ -8,7 +8,6 @@ import lombok.Setter;
 @Setter
 public class OrderDetailDto {
     private int id;
-
     private String consigneeName;
     private String consigneePhone;
     private String consigneeEmail;

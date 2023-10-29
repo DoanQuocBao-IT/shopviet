@@ -14,7 +14,4 @@ public class ProductDto {
     private int sold;
     private double rate;
     private String image;
-    public String getImage(){
-        return "http://localhost:8080/images/"+this.image;
-    }
 }

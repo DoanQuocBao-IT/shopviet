@@ -2,6 +2,7 @@ package com.project.shopviet.Controller;
 
 import com.project.shopviet.DTO.MessageDto;
 import com.project.shopviet.DTO.OrderItemDto;
+import com.project.shopviet.DTO.UserDto;
 import com.project.shopviet.DTO.request.ProductRequest;
 import com.project.shopviet.Model.*;
 import com.project.shopviet.Service.*;
@@ -22,8 +23,6 @@ public class SellerController {
     @Autowired
     ReviewService reviewService;
     @Autowired
-    FollowService followService;
-    @Autowired
     UserService userService;
     @Autowired
     MessageService messageService;
@@ -36,8 +35,8 @@ public class SellerController {
     public String deleteProduct(@PathVariable int id){
         return productService.deleteProduct(id);
     }
-    @PutMapping("/putProd/{id}")
-    public Product updateProduct(@RequestBody Product product,@PathVariable int id){
+    @PutMapping("/product/{id}")
+    public Product updateProduct(@RequestBody ProductRequest product,@PathVariable int id){
         return productService.updateProduct(id, product);
     }
     @GetMapping("/allOrderItem")
@@ -55,25 +54,6 @@ public class SellerController {
     @PostMapping("/feedback/{review_id}")
     Review addFeedback(@RequestBody String feedback,@PathVariable int review_id){
         return reviewService.addReviewFeedback(review_id,feedback);
-    }
-
-
-    @GetMapping("/follow/user{id}")
-    Follow addFollow(@PathVariable int id){
-        return followService.addFollow(id);
-    }
-    @GetMapping("/delfollow/user{id}")
-    void deleteFollow(@PathVariable int id){
-        followService.deteleFollow(id);
-    }
-    @GetMapping("/countfollow/user{id}")
-    int countFollow(@PathVariable int id){
-        return followService.countFollow(id);
-    }
-
-    @GetMapping("/profile")
-    User getProfileShipper(){
-        return userService.getProfile();
     }
 
     @PostMapping("/message/user/{receiver_id}")

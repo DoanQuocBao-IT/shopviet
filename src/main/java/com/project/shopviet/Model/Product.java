@@ -35,6 +35,7 @@ public class Product {
     @ManyToOne
     private User userSeller;
     private Date createdAt;
+    private Date updatedAt;
     @OneToMany( cascade = CascadeType.ALL)
     @JoinColumn(name = "product_id")
     @JsonIgnoreProperties("product")

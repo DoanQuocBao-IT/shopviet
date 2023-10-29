@@ -1,16 +1,15 @@
 package com.project.shopviet.Service.ServiceImpl;
 
-import com.project.shopviet.DTO.ProductDetailDto;
-import com.project.shopviet.DTO.ProductDto;
-import com.project.shopviet.DTO.ProductImageDto;
-import com.project.shopviet.DTO.UserSellerDto;
+import com.project.shopviet.DTO.*;
 import com.project.shopviet.DTO.request.ProductRequest;
 import com.project.shopviet.DTO.response.BrandProductResponse;
 import com.project.shopviet.DTO.response.PagedProductResponse;
+import com.project.shopviet.DTO.response.ProductsIdResponse;
 import com.project.shopviet.Model.Brand;
 import com.project.shopviet.Model.Product;
 import com.project.shopviet.Model.User;
 import com.project.shopviet.Repository.BrandRepository;
+import com.project.shopviet.Repository.FollowRepository;
 import com.project.shopviet.Repository.ProductRepository;
 import com.project.shopviet.Repository.UserRepository;
 import com.project.shopviet.Service.ImageService;
@@ -38,6 +37,8 @@ public class ProductServiceImpl implements ProductService {
     BrandRepository brandRepository;
     @Autowired
     ImageService imageService;
+    @Autowired
+    FollowRepository followRepository;
     @Override
     public Product addProductBySeller(ProductRequest productRequest) {
         try{
@@ -49,10 +50,12 @@ public class ProductServiceImpl implements ProductService {
             product.setDescription(productRequest.getDescription());
             product.setInventory(productRequest.getQuantity());
             product.setPrice(productRequest.getPrice());
+            product.setDiscount(productRequest.getDiscount());
             Brand brand= brandRepository.findById(productRequest.getBrand_id()).get();
             product.setBrand(brand);
-            product.setImage(imageService.saveImage(productRequest.getImage()));
+            product.setImage("http://localhost:8080/images/"+imageService.saveImage(productRequest.getImage()));
             product.setCreatedAt(new Date());
+            product.setUpdatedAt(new Date());
             return productRepository.save(product);
         }catch (IllegalArgumentException e){
             System.out.println("Add Product By Seller Error: "+e.getMessage());
@@ -72,22 +75,32 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product updateProduct(int id, Product product) {
+    public Product updateProduct(int id, ProductRequest productRequest) {
         try {
             if (isExistById(id)) {
-                Product currentProduct = productRepository.findById(id).get();
                 Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
                 User userSeller = userRepository.findUserByName(authentication.getName());
-                currentProduct.setUserSeller(userSeller);
-                currentProduct.setName(product.getName());
-                currentProduct.setDescription(product.getDescription());
-                currentProduct.setInventory(product.getInventory());
-                currentProduct.setPrice(product.getPrice());
-                currentProduct.setImage(product.getImage());
-                currentProduct.setBrand(product.getBrand());
-                currentProduct.setCreatedAt(new Date());
-                productRepository.save(currentProduct);
-                return currentProduct;
+                Product product = productRepository.getProductByIdAndUserSellerId(id, userSeller.getId()).get();
+                product.setName(productRequest.getName());
+                product.setDescription(productRequest.getDescription());
+                product.setInventory(productRequest.getQuantity());
+                product.setPrice(productRequest.getPrice());
+                product.setDiscount(productRequest.getDiscount());
+                Brand brand= brandRepository.findById(productRequest.getBrand_id()).get();
+                product.setBrand(brand);
+                if (product.getImage().equals(productRequest.getImage())){
+                    product.setImage(productRequest.getImage());
+                }else{
+                    if (imageService.deleteImage(product.getImage())){
+                        System.out.println("Delete Image Successful");
+                        product.setImage("http://localhost:8080/images/"+imageService.saveImage(productRequest.getImage()));
+                    }else{
+                        System.out.println("Delete Image Error");
+                        return null;
+                    }
+                }
+                product.setUpdatedAt(new Date());
+                return productRepository.save(product);
             } else return null;
         } catch (IllegalArgumentException e) {
             System.out.println("Update Product Error: " + e.getMessage());
@@ -150,16 +163,58 @@ public class ProductServiceImpl implements ProductService {
 
 
     @Override
-    public Optional<ProductDetailDto> findProductById(int id) {
-        try {
-            Optional<Product> productDetail=productRepository.getProductById(id);
-            ModelMapper modelMapper=new ModelMapper();
-            return productDetail.map(product -> modelMapper.map(product,ProductDetailDto.class));
-
-        }catch (IllegalArgumentException e){
-            System.out.println("Get Product Error: "+e.getMessage());
-            return null;
+    public ProductDetailDto findProductById(int id) {
+        Product product=productRepository.findById(id).get();
+        int followers=followRepository.countFollowByFollowedUserId(product.getUserSeller().getId());
+        int followings=followRepository.countFollowByUserId(product.getUserSeller().getId());
+        int severity=(product.getInventory()-product.getSold())*100/product.getInventory();
+        String severity_status="";
+        if (severity>=80){
+            severity_status="High Stock";
+        } else if (severity>=50){
+            severity_status="Medium Stock";
+        } else if (severity>=20){
+            severity_status="Low Stock";
+        } else if (severity>0){
+            severity_status="Very Low Stock";
+        } else {
+            severity_status="Out of Stock";
         }
+        return ProductDetailDto.builder()
+                .id(product.getId())
+                .name(product.getName())
+                .price(product.getPrice())
+                .discount(product.getDiscount())
+                .inventory(product.getInventory())
+                .severity(severity_status)
+                .sold(product.getSold())
+                .description(product.getDescription())
+                .image(product.getImage())
+                .rate(product.getRate())
+                .seller(UserSellerDto.builder()
+                        .id(product.getUserSeller().getId())
+                        .fname(product.getUserSeller().getFname())
+                        .image(product.getUserSeller().getImage())
+                        .address(product.getUserSeller().getAddress())
+                        .follower(followers+"")
+                        .following(followings+"")
+                        .build())
+                .brand(BrandDto.builder()
+                        .id(product.getBrand().getId())
+                        .name(product.getBrand().getName())
+                        .image(product.getBrand().getImage())
+                        .build())
+                .reviews(product.getReviews().stream().map(review -> ReviewDto.builder()
+                        .id(review.getId())
+                        .comment(review.getComment())
+                        .rating(review.getRating())
+                        .userBuyer(UserSellerDto.builder()
+                                .id(review.getUserBuyer().getId())
+                                .fname(review.getUserBuyer().getFname())
+                                .image(review.getUserBuyer().getImage())
+                                .build())
+                        .build()).collect(Collectors.toList()))
+                .build();
     }
 
     @Override
@@ -239,6 +294,13 @@ public class ProductServiceImpl implements ProductService {
         List<Product> products=productRepository.findByNameContainingIgnoreCase(name);
         ModelMapper modelMapper=new ModelMapper();
         return products.stream().map(product -> modelMapper.map(product,ProductDto.class)).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ProductsIdResponse> getAllProductId() {
+        List<Product> products=productRepository.findAll();
+        ModelMapper modelMapper=new ModelMapper();
+        return products.stream().map(product -> modelMapper.map(product,ProductsIdResponse.class)).collect(Collectors.toList());
     }
 
     @Override

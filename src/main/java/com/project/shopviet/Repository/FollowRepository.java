@@ -8,8 +8,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface FollowRepository extends JpaRepository<Follow,Integer> {
-    @Query(value = "select f from Follow f where f.followedUser.id=:id")
-    Follow findFollowByUserId(int id);
-    @Query("SELECT COUNT(f) FROM Follow f WHERE f.followedUser.id = :user_id")
-    int countFollowersByUserId(@Param("user_id") int user_id);
+    int countFollowByFollowedUserId(int id);
+    int countFollowByUserId(int id);
 }

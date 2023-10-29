@@ -29,11 +29,15 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public String deleteImage(String imageName) {
+    public boolean deleteImage(String imageName) {
         try {
             Path path = Paths.get(UPLOAD_DIR+imageName);
-            Files.delete(path);
-            return "Delete image success";
+            if (Files.exists(path)) {
+                Files.delete(path);
+                return true;
+            } else {
+                return false;
+            }
         } catch (Exception e) {
             throw new RuntimeException("Could not delete image", e);
         }

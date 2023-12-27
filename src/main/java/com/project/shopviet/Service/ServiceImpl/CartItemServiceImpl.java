@@ -41,7 +41,7 @@ public class CartItemServiceImpl implements CartItemService {
                 .status("fail")
                 .build();
         if (isExist(userBuyer.getId(),request.getProduct_id())){
-            CartItem cartItem=cartItemRepository.getCartItemByUser_IdAndProduct_Id(userBuyer.getId(),request.getProduct_id());
+            CartItem cartItem=cartItemRepository.getCartItemByUserIdAndProductId(userBuyer.getId(),request.getProduct_id());
             cartItem.setQuantity(cartItem.getQuantity()+request.getQuantity());
             cartItemRepository.save(cartItem);
             return Response.builder()
@@ -102,7 +102,7 @@ public class CartItemServiceImpl implements CartItemService {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User userBuyer = userRepository.findUserByName(authentication.getName());
             if (isExist(userBuyer.getId(), request.getProduct_id())) {
-                CartItem currentCart = cartItemRepository.getCartItemByUser_IdAndProduct_Id(userBuyer.getId(), request.getProduct_id());
+                CartItem currentCart = cartItemRepository.getCartItemByUserIdAndProductId(userBuyer.getId(), request.getProduct_id());
                 if (request.getQuantity()>0 && request.getQuantity()<=currentCart.getProduct().getInventory()){
                     currentCart.setQuantity(request.getQuantity());
                     cartItemRepository.save(currentCart);
@@ -135,8 +135,12 @@ public class CartItemServiceImpl implements CartItemService {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User userBuyer = userRepository.findUserByName(authentication.getName());
             if (isExist(userBuyer.getId(), productId)) {
-                CartItem currentCart = cartItemRepository.getCartItemByUser_IdAndProduct_Id(userBuyer.getId(), productId);
+                CartItem currentCart = cartItemRepository.getCartItemByUserIdAndProductId(userBuyer.getId(), productId);
+                CartSellerItem cartSellerItem = cartSellerItemRepository.findBySellerIdAndCartItems(currentCart.getProduct().getUserSeller().getId(), List.of(currentCart));
                 cartItemRepository.deleteById(currentCart.getId());
+                if (cartSellerItem.getCartItem().isEmpty()){
+                    cartSellerItemRepository.deleteById(cartSellerItem.getId());
+                }
                 return Response.builder()
                         .message("Delete cart success")
                         .status("success")

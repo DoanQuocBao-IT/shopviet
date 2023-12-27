@@ -3,7 +3,6 @@ package com.project.shopviet.Controller;
 import com.project.shopviet.DTO.MessageDto;
 import com.project.shopviet.DTO.OrderItemDto;
 import com.project.shopviet.DTO.OrderUserDto;
-import com.project.shopviet.DTO.UserDto;
 import com.project.shopviet.Model.*;
 import com.project.shopviet.Service.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +23,7 @@ public class AdminController {
     @Autowired
     UserService userService;
     @Autowired
-    OrderService orderService;
+    OrderDetailService orderDetailService;
     @Autowired
     RoleService roleService;
     @Autowired
@@ -58,7 +57,7 @@ public class AdminController {
 
     @GetMapping("/allOrder")
     public List<OrderUserDto> getAllOrder(){
-        return orderService.getAllOrder();
+        return orderDetailService.getAllOrder();
     }
     @GetMapping("/allOrderItem")
     public List<OrderItemDto> getAllOrderItem(){

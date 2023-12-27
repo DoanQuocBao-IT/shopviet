@@ -2,7 +2,6 @@ package com.project.shopviet.Controller;
 
 import com.project.shopviet.DTO.MessageDto;
 import com.project.shopviet.DTO.OrderItemDto;
-import com.project.shopviet.DTO.UserDto;
 import com.project.shopviet.DTO.request.ProductRequest;
 import com.project.shopviet.Model.*;
 import com.project.shopviet.Service.*;
@@ -19,7 +18,7 @@ public class SellerController {
     @Autowired
     OrderItemService orderItemService;
     @Autowired
-    OrderService orderService;
+    OrderDetailService orderDetailService;
     @Autowired
     ReviewService reviewService;
     @Autowired
@@ -45,7 +44,7 @@ public class SellerController {
     }
     @GetMapping("/allOrder/{seller_id}")
     List<OrderDetail> getAllOrderBySeller(@PathVariable int seller_id){
-        return orderService.getAllOrderBySeller(seller_id);
+        return orderDetailService.getAllOrderBySeller(seller_id);
     }
     @GetMapping("/approved/order{order_id}")
     OrderItemDto approvedOrder(@PathVariable int order_id){

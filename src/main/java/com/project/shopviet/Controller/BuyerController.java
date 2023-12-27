@@ -2,6 +2,7 @@ package com.project.shopviet.Controller;
 
 import com.project.shopviet.DTO.*;
 import com.project.shopviet.DTO.request.ItemCartRequest;
+import com.project.shopviet.DTO.request.OrderRequest;
 import com.project.shopviet.DTO.response.CartResponse;
 import com.project.shopviet.DTO.response.Response;
 import com.project.shopviet.Model.*;
@@ -16,7 +17,7 @@ import java.util.List;
 @CrossOrigin(origins = {"*"})
 public class BuyerController {
     @Autowired
-    OrderService orderService;
+    OrderDetailService orderDetailService;
     @Autowired
     OrderItemService orderItemService;
     @Autowired
@@ -27,6 +28,10 @@ public class BuyerController {
     ReviewService reviewService;
     @Autowired
     MessageService messageService;
+    @Autowired
+    OrderService orderService;
+    @Autowired
+    ConsigneeService consigneeService;
     @PostMapping("/cart")
     public Response addToCart(@RequestBody ItemCartRequest request) {
         return cartItemService.addToCart(request);
@@ -44,6 +49,14 @@ public class BuyerController {
     public CartResponse getCartItems() {
         return cartService.getCart();
     }
+    @PostMapping("/order")
+    public List<OrderDto> addToOrder(@RequestBody OrderRequest orderRequest){
+        return orderService.createOrder(orderRequest);
+    }
+    @PostMapping("/consignee")
+    public ConsigneeDto addConsignee(@RequestBody ConsigneeDto consignee){
+        return consigneeService.createConsignee(consignee);
+    }
     @PostMapping("/order{order_id}/addcart{cart_id}_item")
     public OrderItem addToOrderItem(@PathVariable int order_id,@PathVariable int cart_id){
         return orderItemService.addToOrderItem(cart_id,order_id);
@@ -54,11 +67,11 @@ public class BuyerController {
     }
     @PostMapping("/order/add-orderItem")
     public OrderDetail addToOrder(@RequestBody OrderDetail orderDetail){
-        return orderService.addToOrder(orderDetail);
+        return orderDetailService.addToOrder(orderDetail);
     }
     @GetMapping("/allOrder")
     List<OrderUserDto> getAllOrderByBuyer(){
-        return orderService.getAllOrderByBuyer();
+        return orderDetailService.getAllOrderByBuyer();
     }
     @GetMapping("/order/cancel/{order_id}")
     OrderItemDto cancelledOrder(@PathVariable int order_id){

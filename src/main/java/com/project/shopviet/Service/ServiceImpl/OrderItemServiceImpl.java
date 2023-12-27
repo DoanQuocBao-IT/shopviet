@@ -12,7 +12,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,7 +27,7 @@ public class OrderItemServiceImpl implements OrderItemService {
     @Autowired
     ProductRepository productRepository;
     @Autowired
-    OrderRepository orderRepository;
+    OrderDetailRepository orderDetailRepository;
     @Autowired
     private EmailSenderService emailSenderService;
 
@@ -36,7 +35,7 @@ public class OrderItemServiceImpl implements OrderItemService {
     @Override
     public OrderItem addToOrderItem(int cart_id, int order_id) {
         CartItem cartItem=cartItemRepository.findById(cart_id).get();
-        OrderDetail orderDetail=orderRepository.findById(order_id).get();
+        OrderDetail orderDetail= orderDetailRepository.findById(order_id).get();
         OrderItem orderItem=new OrderItem();
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = userRepository.findUserByName(authentication.getName());

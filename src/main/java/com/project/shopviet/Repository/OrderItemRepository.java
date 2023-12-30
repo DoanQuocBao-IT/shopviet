@@ -9,11 +9,8 @@ import java.util.List;
 
 @Repository
 public interface OrderItemRepository extends JpaRepository<OrderItem,Integer> {
-    @Query(value = "select p from OrderItem p where p.user.id=:id")
-    List<OrderItem> findByOrderItemContaining(int id);
-    @Query(value = "select p from OrderItem p where p.product.userSeller.id=:seller_id")
-    List<OrderItem> findByOrderItemOfSeller(int seller_id);
 
-    List<OrderItem> findByStatus(String status);
-
+    List<OrderItem> findAllByUserIdOrderByCreatedAtDesc(int id);
+    List<OrderItem> findAllByProduct_Seller_Id(int id);
+    List<OrderItem> findAllByStatus(String status);
 }

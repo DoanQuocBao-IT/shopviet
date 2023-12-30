@@ -21,9 +21,9 @@ public class Consignee {
     private String name;
     private String phone;
     private String email;
-    private String province;
-    private String district;
-    private String ward;
+    @OneToOne
+    @JoinColumn(name = "area_id")
+    private Area area;
     private String address;
     @ManyToOne
     @JoinColumn(name = "user_id")

@@ -1,10 +1,10 @@
 package com.project.shopviet.Controller;
 
 import com.project.shopviet.DTO.*;
+import com.project.shopviet.DTO.request.ConsigneeRequest;
 import com.project.shopviet.DTO.request.ItemCartRequest;
 import com.project.shopviet.DTO.request.OrderRequest;
-import com.project.shopviet.DTO.response.CartResponse;
-import com.project.shopviet.DTO.response.Response;
+import com.project.shopviet.DTO.response.ResponseObject;
 import com.project.shopviet.Model.*;
 import com.project.shopviet.Service.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,83 +17,89 @@ import java.util.List;
 @CrossOrigin(origins = {"*"})
 public class BuyerController {
     @Autowired
-    OrderDetailService orderDetailService;
-    @Autowired
     OrderItemService orderItemService;
     @Autowired
     CartItemService cartItemService;
-    @Autowired
-    CartService cartService;
     @Autowired
     ReviewService reviewService;
     @Autowired
     MessageService messageService;
     @Autowired
-    OrderService orderService;
-    @Autowired
     ConsigneeService consigneeService;
+
     @PostMapping("/cart")
-    public Response addToCart(@RequestBody ItemCartRequest request) {
+    public ResponseObject addToCart(@RequestBody ItemCartRequest request) {
         return cartItemService.addToCart(request);
     }
 
     @PutMapping("/cart")
-    public Response updateToCart(@RequestBody ItemCartRequest request){
+    public ResponseObject updateToCart(@RequestBody ItemCartRequest request) {
         return cartItemService.updateCart(request);
     }
-    @DeleteMapping("/cart/product/{id}")
-    public Response deleteCart(@PathVariable int id){
-        return cartItemService.deleteCartItem(id);
+
+    @DeleteMapping("/cart/{id}")
+    public ResponseObject deleteCart(@PathVariable int id, @PathVariable int productTypeId) {
+        return cartItemService.deleteCartItem(id, productTypeId);
     }
+
     @GetMapping("/cart")
-    public CartResponse getCartItems() {
-        return cartService.getCart();
+    public ResponseObject getCartItems() {
+        return cartItemService.getCart();
     }
+
     @PostMapping("/order")
-    public List<OrderDto> addToOrder(@RequestBody OrderRequest orderRequest){
-        return orderService.createOrder(orderRequest);
+    public ResponseObject addToOrder(@RequestBody OrderRequest orderRequest) {
+        return orderItemService.addToOrderItem(orderRequest);
     }
+
     @PostMapping("/consignee")
-    public ConsigneeDto addConsignee(@RequestBody ConsigneeDto consignee){
+    public ResponseObject addConsignee(@RequestBody ConsigneeRequest consignee) {
         return consigneeService.createConsignee(consignee);
     }
-    @PostMapping("/order{order_id}/addcart{cart_id}_item")
-    public OrderItem addToOrderItem(@PathVariable int order_id,@PathVariable int cart_id){
-        return orderItemService.addToOrderItem(cart_id,order_id);
+
+    @PutMapping("/consignee/{id}")
+    public ResponseObject updateConsignee(@RequestBody ConsigneeRequest consignee, @PathVariable int id) {
+        return consigneeService.updateConsignee(consignee, id);
     }
-    @GetMapping("/order-item")
-    public List<OrderItemDto> getAllOrderItem(){
+
+    @DeleteMapping("/consignee/{id}")
+    public ResponseObject deleteConsignee(@PathVariable int id) {
+        return consigneeService.deleteConsignee(id);
+    }
+
+    @GetMapping("/consignee")
+    public ResponseObject getAllConsignee() {
+        return consigneeService.getAllConsignee();
+    }
+
+
+    @GetMapping("/order")
+    public ResponseObject getAllOrderItem() {
         return orderItemService.getAllOrderItemByUser();
     }
-    @PostMapping("/order/add-orderItem")
-    public OrderDetail addToOrder(@RequestBody OrderDetail orderDetail){
-        return orderDetailService.addToOrder(orderDetail);
-    }
-    @GetMapping("/allOrder")
-    List<OrderUserDto> getAllOrderByBuyer(){
-        return orderDetailService.getAllOrderByBuyer();
-    }
+
     @GetMapping("/order/cancel/{order_id}")
-    OrderItemDto cancelledOrder(@PathVariable int order_id){
+    OrderItemDto cancelledOrder(@PathVariable int order_id) {
         return orderItemService.updateStatusCancelled(order_id);
     }
 
     @GetMapping("/order/success/{id}")
-    OrderItemDto updateOrderSuccess(@PathVariable int id){
+    OrderItemDto updateOrderSuccess(@PathVariable int id) {
         return orderItemService.updateStatusSuccess(id);
     }
+
     @PostMapping("/review/orderItem{orderItem_id}")
-    Review addReview(@RequestBody Review review,@PathVariable int orderItem_id){
-        return reviewService.addReview(orderItem_id,review);
+    Review addReview(@RequestBody Review review, @PathVariable int orderItem_id) {
+        return reviewService.addReview(orderItem_id, review);
     }
 
     @PostMapping("/message/user/{receiver_id}")
-    Messages sendMessage(@RequestBody Messages messages,@PathVariable int receiver_id){
-        return messageService.sendMessage(messages,receiver_id);
+    Messages sendMessage(@RequestBody Messages messages, @PathVariable int receiver_id) {
+        return messageService.sendMessage(messages, receiver_id);
     }
+
     @GetMapping("/message/user/{receiver_id}")
-    List<MessageDto> getAllMessage(@PathVariable int receiver_id)
-    {
+    List<MessageDto> getAllMessage(@PathVariable int receiver_id) {
         return messageService.findBySenderAndReceiverOrderByCreateAtAsc(receiver_id);
     }
 }

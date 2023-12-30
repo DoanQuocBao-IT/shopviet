@@ -6,6 +6,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ProductsIdResponse {
+@Builder
+public class SellerResponse {
     private int id;
+    private String name;
+    private boolean mall;
 }

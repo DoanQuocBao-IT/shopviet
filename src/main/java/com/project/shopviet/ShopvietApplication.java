@@ -21,9 +21,10 @@ public class ShopvietApplication {
 		System.setProperty("MAIL_PORT", dotenv.get("MAIL_PORT"));
 		System.setProperty("MAIL_USERNAME", dotenv.get("MAIL_USERNAME"));
 		System.setProperty("MAIL_PASSWORD", dotenv.get("MAIL_PASSWORD"));
-		System.setProperty("PATH_UPLOAD", dotenv.get("PATH_UPLOAD"));
-		System.setProperty("PATH_IMAGE", dotenv.get("PATH_IMAGE"));
 		System.setProperty("MAX_IMAGE_SIZE", dotenv.get("MAX_IMAGE_SIZE"));
+		System.setProperty("CLOUDINARY_CLOUD_NAME", dotenv.get("CLOUDINARY_CLOUD_NAME"));
+		System.setProperty("CLOUDINARY_API_KEY", dotenv.get("CLOUDINARY_API_KEY"));
+		System.setProperty("CLOUDINARY_API_SECRET", dotenv.get("CLOUDINARY_API_SECRET"));
 
 		SpringApplication.run(ShopvietApplication.class, args);
 	}

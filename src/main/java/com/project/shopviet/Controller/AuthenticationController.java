@@ -4,6 +4,7 @@ import com.project.shopviet.DTO.AccessToken;
 import com.project.shopviet.DTO.ErrorResponse;
 import com.project.shopviet.DTO.RefreshToken;
 import com.project.shopviet.DTO.RegisterDto;
+import com.project.shopviet.DTO.response.ResponseObject;
 import com.project.shopviet.JWT.JwtRequest;
 import com.project.shopviet.JWT.JwtResponse;
 import com.project.shopviet.JWT.JwtTokenProvider;
@@ -60,16 +61,8 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody RegisterDto registerDto) throws Exception{
-        boolean isUserCreated=userService.addRegisterUser(registerDto);
-        if (isUserCreated){
-            UserDetails userDetails= userDetailsService.loadUserByUsername(registerDto.getUsername());
-            String jwt = jwtTokenProvider.generateAccessToken(userDetails);
-            return ResponseEntity.ok(new JwtResponse(jwt));
-        }else {
-            ErrorResponse errorResponse=new ErrorResponse("BAD_REQUEST","Username already exists");
-            return new ResponseEntity(errorResponse,HttpStatus.BAD_REQUEST);
-        }
+    public ResponseObject registerUser(@RequestBody RegisterDto registerDto) throws Exception{
+        return userService.registerUserBuyer(registerDto);
     }
     @PostMapping("/refresh-token")
     public ResponseEntity<?> refreshToken(@RequestBody RefreshToken refreshToken){

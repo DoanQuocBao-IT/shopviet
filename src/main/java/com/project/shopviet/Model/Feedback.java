@@ -18,11 +18,11 @@ public class Feedback {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "buyer_id")
     private User buyer;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
 
@@ -31,7 +31,7 @@ public class Feedback {
     private String reply;
     private Date replyTime;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "seller_id")
-    private User seller;
+    private Seller seller;
 }

@@ -19,7 +19,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "user")
+@Table(name = "users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -53,8 +53,4 @@ public class User {
     }
     private boolean approved;
     private boolean locked;
-    @OneToMany( cascade = CascadeType.ALL)
-    @JoinTable
-    @JsonIgnore
-    private List<Review> reviews;
 }

@@ -2,13 +2,16 @@ package com.project.shopviet.Service.ServiceImpl;
 
 import com.project.shopviet.DTO.RegisterDto;
 import com.project.shopviet.DTO.UserDto;
-import com.project.shopviet.DTO.UserSellerDto;
+import com.project.shopviet.DTO.request.RegisterSellerRequest;
+import com.project.shopviet.DTO.response.ResponseObject;
+import com.project.shopviet.DTO.response.UserSellerResponse;
+import com.project.shopviet.Model.Area;
 import com.project.shopviet.Model.Role;
+import com.project.shopviet.Model.Seller;
 import com.project.shopviet.Model.User;
-import com.project.shopviet.Repository.FollowRepository;
-import com.project.shopviet.Repository.RoleRepository;
-import com.project.shopviet.Repository.UserRepository;
+import com.project.shopviet.Repository.*;
 import com.project.shopviet.Service.EmailSenderService;
+import com.project.shopviet.Service.ImageService;
 import com.project.shopviet.Service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,20 +24,25 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
     @Autowired
     UserRepository userRepository;
     @Autowired
-    private RoleRepository roleRepository;
+    RoleRepository roleRepository;
     @Autowired
-    private BCryptPasswordEncoder passwordEncoder;
+    BCryptPasswordEncoder passwordEncoder;
     @Autowired
-    private EmailSenderService emailSenderService;
+    EmailSenderService emailSenderService;
     @Autowired
-    private FollowRepository followRepository;
+    FollowRepository followRepository;
+    @Autowired
+    SellerRepository sellerRepository;
+    @Autowired
+    AreaRepository areaRepository;
+    @Autowired
+    ImageService imageService;
 
     @Transactional
     public void addRoleToUser(int userId, int roleId) {
@@ -43,32 +51,93 @@ public class UserServiceImpl implements UserService {
         user.addRole(role);
         userRepository.save(user);
     }
+
     @Override
-    public boolean addRegisterUser(RegisterDto registerDto) {
-        try{
-            User user=new User();
-            Role role=roleRepository.findRoleByName(registerDto.getRoleName());
-            if(userRepository.findUserByName(registerDto.getUsername())!=null){
-                return false;
+    public ResponseObject registerUserBuyer(RegisterDto registerDto) {
+        try {
+            User user = new User();
+            Role role = roleRepository.findRoleByName(registerDto.getRoleName());
+            if (userRepository.findUserByName(registerDto.getUsername()) != null) {
+                return ResponseObject.builder()
+                        .code(400)
+                        .message("Username already exists")
+                        .build();
             }
             user.setUsername(registerDto.getUsername());
             user.setPassword(passwordEncoder.encode(registerDto.getPassword()));
             user.setFname(registerDto.getFname());
-            user.setImage(registerDto.getImage());
             user.setPhone(registerDto.getPhone());
+            Optional<User> userOptional = userRepository.findByEmail(registerDto.getEmail());
+            if (userOptional.isPresent()) {
+                return ResponseObject.builder()
+                        .code(400)
+                        .message("Email already exists")
+                        .build();
+            }
             user.setEmail(registerDto.getEmail());
             user.addRole(role);
             user.setLocked(false);
-            if (registerDto.getRoleName().equals("buyer")){
+            if (registerDto.getRoleName().equals("buyer")) {
                 user.setApproved(true);
-            }else {
+            } else {
                 user.setApproved(false);
             }
             userRepository.save(user);
-            return true;
-        }catch (IllegalArgumentException e){
-            System.out.println("Register User Error: "+e.getMessage());
-            return false;
+            return ResponseObject.builder()
+                    .code(200)
+                    .message("Register User Success")
+                    .build();
+        } catch (IllegalArgumentException e) {
+            return ResponseObject.builder()
+                    .code(400)
+                    .message("Register User Error: " + e.getMessage())
+                    .build();
+        }
+    }
+
+    @Override
+    public ResponseObject registerUserSeller(RegisterSellerRequest registerDto) {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String currentPrincipalName = authentication.getName();
+            User userSeller = userRepository.findUserByName(currentPrincipalName);
+            if (userSeller == null) {
+                return ResponseObject.builder()
+                        .code(400)
+                        .message("Seller not found")
+                        .build();
+            }
+            Optional<Seller> seller = sellerRepository.findByUserId(userSeller.getId());
+            if (seller.isPresent()) {
+                return ResponseObject.builder()
+                        .code(400)
+                        .message("Seller already exists")
+                        .build();
+            }
+            Seller newSeller = new Seller();
+            newSeller.setNameStore(registerDto.getName_store());
+            newSeller.setImage(registerDto.getImage());
+            newSeller.setDescription(registerDto.getDescription());
+            newSeller.setAddress(registerDto.getAddress());
+            Area area = areaRepository.findByProvinceAndDistrictAndPrecinctAndStatus(registerDto.getProvince(), registerDto.getDistrict(), registerDto.getPrecinct(), "1");
+            if (area == null) {
+                return ResponseObject.builder()
+                        .code(400)
+                        .message("Area not found")
+                        .build();
+            }
+            newSeller.setArea(area);
+            newSeller.setUser(userSeller);
+            sellerRepository.save(newSeller);
+            return ResponseObject.builder()
+                    .code(200)
+                    .message("Register User Success")
+                    .build();
+        } catch (IllegalArgumentException e) {
+            return ResponseObject.builder()
+                    .code(400)
+                    .message("Register User Error: " + e.getMessage())
+                    .build();
         }
     }
 
@@ -81,10 +150,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Optional<User> getUserByUsername(String username) {
-        try{
+        try {
             return userRepository.getUserByUsername(username);
-        }catch (IllegalArgumentException e){
-            System.out.println("Find User Error: "+e.getMessage());
+        } catch (IllegalArgumentException e) {
+            System.out.println("Find User Error: " + e.getMessage());
             return null;
         }
     }
@@ -93,83 +162,40 @@ public class UserServiceImpl implements UserService {
     public List<User> findUserByRole(Role role) {
         try {
             return userRepository.findByRolesContaining(role);
-        }catch (IllegalArgumentException e){
-            System.out.println("Find User Error: "+e.getMessage());
+        } catch (IllegalArgumentException e) {
+            System.out.println("Find User Error: " + e.getMessage());
             return null;
         }
     }
 
     @Override
     public List<User> findByRolesIn(Set<Role> roles) {
-        try{
-            return userRepository.findByRolesIn(roles);
-        }catch (IllegalArgumentException e){
-            System.out.println("Find User Error: "+e.getMessage());
-            return null;
-        }
-    }
-
-    @Override
-    public String deleteUser(int id) {
-        try{
-            userRepository.deleteById(id);
-            return "Delete User Successful";
-        }catch (IllegalArgumentException e){
-            return "Delete User Error: "+e.getMessage();
-        }
-    }
-
-    @Override
-    public User updateUser(int id, User user) {
         try {
-            if (isExistById(id)) {
-                User currentUser = userRepository.findById(id).get();
-                currentUser.setFname(user.getFname());
-                currentUser.setEmail(user.getEmail());
-                currentUser.setPhone(user.getPhone());
-                currentUser.setImage(user.getImage());
-                currentUser.setRoles(user.getRoles());
-
-                userRepository.save(currentUser);
-                return currentUser;
-            } else return null;
+            return userRepository.findByRolesIn(roles);
         } catch (IllegalArgumentException e) {
-            System.out.println("Update User Error: " + e.getMessage());
+            System.out.println("Find User Error: " + e.getMessage());
             return null;
         }
     }
 
+
     @Override
-    public UserSellerDto getUserById(int id) {
-        User users=userRepository.findById(id).get();
-        ModelMapper modelMapper=new ModelMapper();
-        return modelMapper.map(users,UserSellerDto.class);
+    public UserSellerResponse getUserById(int id) {
+        User users = userRepository.findById(id).get();
+        ModelMapper modelMapper = new ModelMapper();
+        return modelMapper.map(users, UserSellerResponse.class);
     }
 
     @Override
     public List<User> getAllUser() {
-        try{
+        try {
             return (List<User>) userRepository.findAll();
-        }catch (IllegalArgumentException e){
-            System.out.println("Get All User Error: "+e.getMessage());
+        } catch (IllegalArgumentException e) {
+            System.out.println("Get All User Error: " + e.getMessage());
             return null;
         }
     }
 
-    @Override
-    public List<User> getUserForRole(int role_id) {
-        return null;
-    }
-
-    @Override
-    public Set<Role> getRoleForUser(int user_id) {
-        try{
-            return userRepository.getRoleFromUserId(user_id);
-        }catch (IllegalArgumentException e){
-            System.out.println("Get All Role for User Id Error: "+e.getMessage());
-            return null;
-        }
-    }
 
     @Override
     public boolean isExistById(int id) {
@@ -182,9 +208,9 @@ public class UserServiceImpl implements UserService {
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             user.setApproved(true);
-            String message="Chúng tôi gửi mail này để xác nhận tài khoản ShopViet của "+user.getFname() +" đã phê duyệt đăng kí tài khoản thành công. Rẩt vui khi trở thành đối tác của bạn và mong bạn ứng xử phù hợp các quy tắc chung tránh tình trạng bị khóa tài khoản.\n" +
-                        "Vui lòng bỏ qua mail này nếu như bạn chưa từng đăng kí tài khoản tại ShopViet";
-            emailSenderService.sendEmailActive(user.getEmail(),"Thông báo xác thực tài khoản ShopViet thành công!!",message);
+            String message = "Chúng tôi gửi mail này để xác nhận tài khoản ShopViet của " + user.getFname() + " đã phê duyệt đăng kí tài khoản thành công. Rẩt vui khi trở thành đối tác của bạn và mong bạn ứng xử phù hợp các quy tắc chung tránh tình trạng bị khóa tài khoản.\n" +
+                    "Vui lòng bỏ qua mail này nếu như bạn chưa từng đăng kí tài khoản tại ShopViet";
+            emailSenderService.sendEmailActive(user.getEmail(), "Thông báo xác thực tài khoản ShopViet thành công!!", message);
             userRepository.save(user);
         } else {
             throw new RuntimeException("User not found");

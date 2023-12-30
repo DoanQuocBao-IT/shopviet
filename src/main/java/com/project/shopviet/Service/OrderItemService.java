@@ -1,13 +1,15 @@
 package com.project.shopviet.Service;
 
 import com.project.shopviet.DTO.OrderItemDto;
+import com.project.shopviet.DTO.request.OrderRequest;
+import com.project.shopviet.DTO.response.ResponseObject;
 import com.project.shopviet.Model.OrderItem;
 
 import java.util.List;
 
 public interface OrderItemService {
-    OrderItem addToOrderItem(int cart_id, int order_id);
-    List<OrderItemDto> getAllOrderItemByUser();
+    ResponseObject addToOrderItem(OrderRequest orderRequest);
+    ResponseObject getAllOrderItemByUser();
     List<OrderItemDto> getAllOrderItem();
     List<OrderItemDto> getAllOrderItemOfSeller();
 

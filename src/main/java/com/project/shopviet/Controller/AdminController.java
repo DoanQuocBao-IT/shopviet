@@ -2,7 +2,8 @@ package com.project.shopviet.Controller;
 
 import com.project.shopviet.DTO.MessageDto;
 import com.project.shopviet.DTO.OrderItemDto;
-import com.project.shopviet.DTO.OrderUserDto;
+import com.project.shopviet.DTO.request.CategoryRequest;
+import com.project.shopviet.DTO.response.ResponseObject;
 import com.project.shopviet.Model.*;
 import com.project.shopviet.Service.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,43 +24,25 @@ public class AdminController {
     @Autowired
     UserService userService;
     @Autowired
-    OrderDetailService orderDetailService;
-    @Autowired
     RoleService roleService;
     @Autowired
     OrderItemService orderItemService;
     @Autowired
     MessageService messageService;
-    @PostMapping("/addCat")
-    public Category addCategory(@RequestBody Category category){
+    @PostMapping("/category")
+    public ResponseObject addCategory(@RequestBody CategoryRequest category){
         return categoryService.addCategory(category);
     }
-    @DeleteMapping("/delCat/{id}")
-    public String deleteCategory(@PathVariable int id){
+    @DeleteMapping("/category/{id}")
+    public ResponseObject deleteCategory(@PathVariable int id){
         return categoryService.deleteCategory(id);
     }
-    @PutMapping("/putCat/{id}")
-    public Category updateCategory(@RequestBody Category category,@PathVariable int id){
+    @PutMapping("/category/{id}")
+    public ResponseObject updateCategory(@RequestBody CategoryRequest category,@PathVariable int id){
         return categoryService.updateCategory(id, category);
     }
-    @PostMapping("/addBrand")
-    public Brand addBrand(@RequestBody Brand brand){
-        return brandService.addBrand(brand);
-    }
-    @DeleteMapping("/delBrand/{id}")
-    public String deleteBrand(@PathVariable int id){
-        return brandService.deleteBrand(id);
-    }
-    @PutMapping("/putBrand/{id}")
-    public Brand updateBrand(@RequestBody Brand brand,@PathVariable int id){
-        return brandService.updateBrand(id, brand);
-    }
 
-    @GetMapping("/allOrder")
-    public List<OrderUserDto> getAllOrder(){
-        return orderDetailService.getAllOrder();
-    }
-    @GetMapping("/allOrderItem")
+    @GetMapping("/order")
     public List<OrderItemDto> getAllOrderItem(){
         return orderItemService.getAllOrderItem();
     }

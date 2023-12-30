@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -21,9 +22,10 @@ public class Category {
     private int id;
     private String name;
     private String image;
-    @OneToMany( cascade = CascadeType.ALL)
-    @JoinColumn(name = "category_id")
-    @JsonIgnoreProperties("category")
-    private List<Brand> brands;
-
+    private String description;
+    private int status = 1;
+    private int priority = 0;
+    private int parentId;
+    private Date createdAt;
+    private Date updatedAt;
 }

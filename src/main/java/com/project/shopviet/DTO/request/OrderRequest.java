@@ -8,6 +8,6 @@ import java.util.List;
 @Getter
 @Setter
 public class OrderRequest {
-    private int consignee_id;
-    private List<SellerProductRequest> sellersProduct;
+    private int consigneeId;
+    private List<ItemCartRequest> products;
 }

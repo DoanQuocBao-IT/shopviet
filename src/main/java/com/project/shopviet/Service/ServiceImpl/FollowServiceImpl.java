@@ -1,6 +1,6 @@
 package com.project.shopviet.Service.ServiceImpl;
 
-import com.project.shopviet.DTO.response.Response;
+import com.project.shopviet.DTO.response.ResponseObject;
 import com.project.shopviet.Model.Follow;
 import com.project.shopviet.Model.User;
 import com.project.shopviet.Repository.FollowRepository;
@@ -17,44 +17,45 @@ public class FollowServiceImpl implements FollowService {
     UserRepository userRepository;
     @Autowired
     FollowRepository followRepository;
+
     @Override
-    public Response addFollow(int followUser) {
+    public ResponseObject addFollow(int followUser) {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User user = userRepository.findUserByName(authentication.getName());
-            Follow follow=new Follow();
+            Follow follow = new Follow();
             follow.setUser(user);
-            User followedUser=userRepository.findById(followUser).get();
+            User followedUser = userRepository.findById(followUser).get();
             follow.setFollowedUser(followedUser);
             followRepository.save(follow);
-            return Response.builder()
+            return ResponseObject.builder()
+                    .code(200)
                     .message("Followed")
-                    .status("success")
                     .build();
-        }catch (Exception e){
-            return Response.builder()
+        } catch (Exception e) {
+            return ResponseObject.builder()
+                    .code(400)
                     .message("Followed")
-                    .status("error")
                     .build();
         }
 
     }
 
     @Override
-    public Response unFollow(int followUser) {
+    public ResponseObject unFollow(int followUser) {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User user = userRepository.findUserByName(authentication.getName());
-            Follow follow=followRepository.getReferenceById(user.getId());
+            Follow follow = followRepository.getReferenceById(user.getId());
             followRepository.delete(follow);
-            return Response.builder()
+            return ResponseObject.builder()
+                    .code(200)
                     .message("Unfollowed")
-                    .status("success")
                     .build();
-        }catch (Exception e) {
-            return Response.builder()
+        } catch (Exception e) {
+            return ResponseObject.builder()
+                    .code(400)
                     .message("Unfollowed")
-                    .status("error")
                     .build();
         }
     }

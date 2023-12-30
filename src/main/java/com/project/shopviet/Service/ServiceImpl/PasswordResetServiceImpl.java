@@ -11,6 +11,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 public class PasswordResetServiceImpl implements PasswordResetService {
     @Autowired
@@ -22,12 +24,12 @@ public class PasswordResetServiceImpl implements PasswordResetService {
 
     @Override
     public void sendPasswordResetMail(String email) {
-        User user=userRepository.findByEmail(email);
-        if (user == null) {
+        Optional<User> user=userRepository.findByEmail(email);
+        if (user.isEmpty()) {
             throw new IllegalArgumentException("Email not found "+email);
         }
 
-        PasswordResetToken token= new PasswordResetToken(user);
+        PasswordResetToken token= new PasswordResetToken(user.get());
         passwordResetTokenRepository.save(token);
         String subject = "Reset Your Password in ShopViet";
         String body = "To reset your password, please click the following link: "

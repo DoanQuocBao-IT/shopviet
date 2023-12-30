@@ -1,7 +1,14 @@
 package com.project.shopviet.Service;
 
-import com.project.shopviet.DTO.ConsigneeDto;
+import com.project.shopviet.DTO.request.ConsigneeRequest;
+import com.project.shopviet.DTO.response.ResponseObject;
 
 public interface ConsigneeService {
-    ConsigneeDto createConsignee(ConsigneeDto consigneeDto);
+    ResponseObject createConsignee(ConsigneeRequest consigneeDto);
+
+    ResponseObject updateConsignee(ConsigneeRequest consigneeDto, int id);
+
+    ResponseObject deleteConsignee(int id);
+
+    ResponseObject getAllConsignee();
 }

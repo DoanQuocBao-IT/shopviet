@@ -12,16 +12,11 @@ import java.util.Optional;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product,Integer> {
-    @Query(value = "select p.image from Product p")
-    List<String> getAllImageProduct();
-    @Query(value = "select prod from Product prod where prod.brand.id=:id")
-    List<Product> getProductByBrandId(int id);
-    @Query(value = "select prod from Product prod where prod.brand.category.id=:id")
-    List<Product> getProductByCategoryId(int id);
-    @Query(value = "select prod from Product prod where prod.userSeller.id=:seller_id")
-    List<Product> getProductBySellerId(int seller_id);
-    Page<Product> getProductsUserSellerByUserSellerId(int seller_id, Pageable pageable);
+    Optional<Product> findByIdAndSellerId(int id,int seller_id);
+    Page<Product> findAllByCategoryId(int category_id, Pageable pageable);
+    Page<Product> findAllByBrandId(int brand_id, Pageable pageable);
+    Page<Product> findAllBySellerId(int seller_id, Pageable pageable);
+    Page<Product> findAllByBrandIdAndSellerId(int brand_id,int seller_id, Pageable pageable);
     List<Product> findByNameContainingIgnoreCase(String name);
-    Page<Product> findAll(Pageable pageable);
-    Optional<Product> getProductByIdAndUserSellerId(int id, int seller_id);
+    List<Product> findTop3ByBrandIdOrderBySoldDesc(int brand_id);
 }

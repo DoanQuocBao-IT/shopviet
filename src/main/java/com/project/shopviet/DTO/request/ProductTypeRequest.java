@@ -5,8 +5,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ItemCartRequest {
-    private int product_id;
-    private int product_type_id;
+public class ProductTypeRequest {
+    private String name;
+    private String image;
+    private Long price;
     private int quantity;
 }

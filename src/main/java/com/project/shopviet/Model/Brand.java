@@ -24,32 +24,10 @@ public class Brand {
     private String name;
     @Column(name = "image")
     private String image;
+    private int status = 1;
+    private int productCount = 0;
 
     @ManyToOne
-    @JoinColumn(name = "category_id")
-    @JsonIgnoreProperties("brands")
-    private Category category;
-
-
-    @OneToMany( cascade = CascadeType.ALL)
-    @JoinColumn(name = "brand_id")
-    @JsonIgnoreProperties("brand")
-    private List<Product> products;
-    @Transient
-    private int sold;
-    @Transient
-    private int total_product;
-    public int getSold() {
-        int sold = 0;
-        for (Product product : products) {
-            sold += product.getSold();
-        }
-        return sold;
-    }
-    public int getTotal_product() {
-        if (products == null) {
-            return 0;
-        }
-        return products.size();
-    }
+    @JoinColumn(name = "seller_id")
+    private Seller userSeller;
 }

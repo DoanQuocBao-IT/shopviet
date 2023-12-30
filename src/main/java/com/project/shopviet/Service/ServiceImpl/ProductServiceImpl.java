@@ -2,24 +2,14 @@ package com.project.shopviet.Service.ServiceImpl;
 
 import com.project.shopviet.DTO.*;
 import com.project.shopviet.DTO.request.ProductRequest;
-import com.project.shopviet.DTO.response.BrandProductResponse;
-import com.project.shopviet.DTO.response.PagedProductResponse;
-import com.project.shopviet.DTO.response.ProductsIdResponse;
-import com.project.shopviet.Model.Brand;
-import com.project.shopviet.Model.Product;
-import com.project.shopviet.Model.User;
-import com.project.shopviet.Repository.BrandRepository;
-import com.project.shopviet.Repository.FollowRepository;
-import com.project.shopviet.Repository.ProductRepository;
-import com.project.shopviet.Repository.UserRepository;
+import com.project.shopviet.DTO.response.*;
+import com.project.shopviet.Model.*;
+import com.project.shopviet.Repository.*;
 import com.project.shopviet.Service.ImageService;
 import com.project.shopviet.Service.ProductService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -39,77 +29,173 @@ public class ProductServiceImpl implements ProductService {
     ImageService imageService;
     @Autowired
     FollowRepository followRepository;
+    @Autowired
+    SellerRepository sellerRepository;
+    @Autowired
+    CategoryRepository categoryRepository;
+    @Autowired
+    ProductTypeRepository productTypeRepository;
     @Override
-    public Product addProductBySeller(ProductRequest productRequest) {
+    public ResponseObject addProductBySeller(ProductRequest productRequest) {
         try{
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User userSeller = userRepository.findUserByName(authentication.getName());
-            Product product=new Product();
-            product.setUserSeller(userSeller);
+            Optional<Seller> seller = sellerRepository.findByUserId(userSeller.getId());
+            if (!seller.isPresent()){
+                return ResponseObject.builder()
+                        .code(400)
+                        .message("You are not a seller")
+                        .build();
+            }
+            Product product = new Product();
             product.setName(productRequest.getName());
             product.setDescription(productRequest.getDescription());
-            product.setInventory(productRequest.getQuantity());
-            product.setPrice(productRequest.getPrice());
             product.setDiscount(productRequest.getDiscount());
-            Brand brand= brandRepository.findById(productRequest.getBrand_id()).get();
-            product.setBrand(brand);
-            product.setImage("http://localhost:8080/images/"+imageService.saveImage(productRequest.getImage()));
+            product.setInventory(productRequest.getInventory());
+            Optional<Brand> brand=brandRepository.findById(productRequest.getBrand_id());
+            if (brand.isEmpty()){
+                return ResponseObject.builder()
+                        .code(400)
+                        .message("Brand not found")
+                        .build();
+            }
+            brand.get().setProductCount(brand.get().getProductCount()+1);
+            brandRepository.save(brand.get());
+            product.setBrand(brand.get());
+            Optional<Category> category=categoryRepository.findById(productRequest.getCategory_id());
+            if (category.isEmpty()){
+                return ResponseObject.builder()
+                        .code(400)
+                        .message("Category not found")
+                        .build();
+            }
+            product.setCategory(category.get());
+            product.setSeller(seller.get());
             product.setCreatedAt(new Date());
             product.setUpdatedAt(new Date());
-            return productRepository.save(product);
+            productRepository.save(product);
+            productRequest.getProductTypes().forEach(productTypeRequest -> {
+                ProductType productType=new ProductType();
+                productType.setProduct(product);
+                productType.setName(productTypeRequest.getName());
+                productType.setImage(productTypeRequest.getImage());
+                productType.setPrice(productTypeRequest.getPrice());
+                productType.setQuantity(productTypeRequest.getQuantity());
+                productTypeRepository.save(productType);
+            });
+            return ResponseObject.builder()
+                    .code(200)
+                    .message("Add Product Successful")
+                    .build();
+
         }catch (IllegalArgumentException e){
-            System.out.println("Add Product By Seller Error: "+e.getMessage());
-            return null;
+            return ResponseObject.builder()
+                    .code(400)
+                    .message("Add Product Error: "+e.getMessage())
+                    .build();
         }
     }
 
     @Override
-    public String deleteProduct(int id) {
+    public ResponseObject deleteProduct(int id) {
         try{
-            productRepository.deleteById(id);
-            return "Delete Product Successful";
+            if (!isExistById(id)){
+                return ResponseObject.builder()
+                        .code(400)
+                        .message("Product not found")
+                        .build();
+            }
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            User userSeller = userRepository.findUserByName(authentication.getName());
+            Optional<Seller> seller = sellerRepository.findByUserId(userSeller.getId());
+            if (!seller.isPresent()){
+                return ResponseObject.builder()
+                        .code(400)
+                        .message("You are not a seller")
+                        .build();
+            }
+            Optional<Product> product=productRepository.findByIdAndSellerId(id,seller.get().getId());
+            if (product.isEmpty()){
+                return ResponseObject.builder()
+                        .code(400)
+                        .message("Product not found")
+                        .build();
+            }
+            productRepository.delete(product.get());
+            return ResponseObject.builder()
+                    .code(200)
+                    .message("Delete Product Successful")
+                    .build();
         }catch (IllegalArgumentException e){
-            System.out.println("Delete Category Error: "+e.getMessage());
-            return "Delete Category Error: "+e.getMessage();
+            return ResponseObject.builder()
+                    .code(400)
+                    .message("Delete Product Error: "+e.getMessage())
+                    .build();
         }
     }
 
     @Override
-    public Product updateProduct(int id, ProductRequest productRequest) {
+    public ResponseObject updateProduct(int id, ProductRequest productRequest) {
         try {
-            if (isExistById(id)) {
-                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-                User userSeller = userRepository.findUserByName(authentication.getName());
-                Product product = productRepository.getProductByIdAndUserSellerId(id, userSeller.getId()).get();
-                product.setName(productRequest.getName());
-                product.setDescription(productRequest.getDescription());
-                product.setInventory(productRequest.getQuantity());
-                product.setPrice(productRequest.getPrice());
-                product.setDiscount(productRequest.getDiscount());
-                Brand brand= brandRepository.findById(productRequest.getBrand_id()).get();
-                product.setBrand(brand);
-                if (product.getImage().equals(productRequest.getImage())){
-                    product.setImage(productRequest.getImage());
-                }else{
-                    if (imageService.deleteImage(product.getImage())){
-                        System.out.println("Delete Image Successful");
-                        product.setImage("http://localhost:8080/images/"+imageService.saveImage(productRequest.getImage()));
-                    }else{
-                        System.out.println("Delete Image Error");
-                        return null;
-                    }
-                }
-                product.setUpdatedAt(new Date());
-                return productRepository.save(product);
-            } else return null;
+            if (!isExistById(id)) {
+                return ResponseObject.builder()
+                        .code(400)
+                        .message("Product not found")
+                        .build();
+            }
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            User userSeller = userRepository.findUserByName(authentication.getName());
+            Optional<Seller> seller = sellerRepository.findByUserId(userSeller.getId());
+            if (seller.isEmpty()) {
+                return ResponseObject.builder()
+                        .code(400)
+                        .message("You are not a seller")
+                        .build();
+            }
+            Optional<Product> product = productRepository.findByIdAndSellerId(id, seller.get().getId());
+            if (product.isEmpty()) {
+                return ResponseObject.builder()
+                        .code(400)
+                        .message("Product not found")
+                        .build();
+            }
+            Product productUpdate = product.get();
+            productUpdate.setName(!Objects.equals(productRequest.getName(), "") ? productRequest.getName() : productUpdate.getName());
+            productUpdate.setDescription(!Objects.equals(productRequest.getDescription(), "") ? productRequest.getDescription() : productUpdate.getDescription());
+            productUpdate.setDiscount(productRequest.getDiscount() != productUpdate.getDiscount() ? productRequest.getDiscount() : productUpdate.getDiscount());
+            productUpdate.setInventory(productRequest.getInventory() != productUpdate.getInventory() ? productRequest.getInventory() : productUpdate.getInventory());
+            Optional<Brand> brand = brandRepository.findById(productRequest.getBrand_id());
+            if (brand.isEmpty()) {
+                return ResponseObject.builder()
+                        .code(400)
+                        .message("Brand not found")
+                        .build();
+            }
+            productUpdate.setBrand(brand.get());
+            Optional<Category> category = categoryRepository.findById(productRequest.getCategory_id());
+            if (category.isEmpty()) {
+                return ResponseObject.builder()
+                        .code(400)
+                        .message("Category not found")
+                        .build();
+            }
+            productUpdate.setCategory(category.get());
+            productUpdate.setUpdatedAt(new Date());
+            productRepository.save(productUpdate);
+            return ResponseObject.builder()
+                    .code(200)
+                    .message("Update Product Successful")
+                    .build();
         } catch (IllegalArgumentException e) {
-            System.out.println("Update Product Error: " + e.getMessage());
-            return null;
+            return ResponseObject.builder()
+                    .code(400)
+                    .message("Update Product Error: " + e.getMessage())
+                    .build();
         }
     }
 
     @Override
-    public PagedProductResponse getAllProduct(String sort, int perPage, int currentPage) {
+    public ResponseObject getAllProduct(int category_id, String sort, int perPage, int currentPage) {
         try{
             Sort sorting;
             switch (sort) {
@@ -146,14 +232,23 @@ public class ProductServiceImpl implements ProductService {
             }
             ModelMapper modelMapper=new ModelMapper();
             // Lấy trang sản phẩm
-            Page<Product> productPage = productRepository.findAll(pageable);
+            Page<Product> productPage = new PageImpl<>(Collections.emptyList());
+            if (category_id==0) {
+                productPage = productRepository.findAll(pageable);
+            }else if (category_id>0){
+                productPage = productRepository.findAllByCategoryId(category_id,pageable);
+            }
             List<ProductDto> productDtoPage=productPage.stream().map(product -> modelMapper.map(product,ProductDto.class)).collect(Collectors.toList());
-            return PagedProductResponse.builder()
-                    .total_page(productPage.getTotalPages())
-                    .current_page(currentPage)
-                    .per_page(perPage)
-                    .total_product(productPage.getTotalElements())
-                    .products(productDtoPage)
+            return ResponseObject.builder()
+                    .code(200)
+                    .message("Get All Product Successful")
+                    .data(PageProductResponse.builder()
+                            .total_page(productPage.getTotalPages())
+                            .current_page(currentPage)
+                            .per_page(perPage)
+                            .total_product(productPage.getTotalElements())
+                            .data(productDtoPage)
+                            .build())
                     .build();
         }catch (IllegalArgumentException e){
             System.out.println("Get All Product Error: "+e.getMessage());
@@ -161,127 +256,129 @@ public class ProductServiceImpl implements ProductService {
         }
     }
 
-
     @Override
-    public ProductDetailDto findProductById(int id) {
-        Product product=productRepository.findById(id).get();
-        int followers=followRepository.countFollowByFollowedUserId(product.getUserSeller().getId());
-        int followings=followRepository.countFollowByUserId(product.getUserSeller().getId());
-        int severity=(product.getInventory()-product.getSold())*100/product.getInventory();
-        String severity_status="";
-        if (severity>=80){
-            severity_status="High Stock";
-        } else if (severity>=50){
-            severity_status="Medium Stock";
-        } else if (severity>=20){
-            severity_status="Low Stock";
-        } else if (severity>0){
-            severity_status="Very Low Stock";
-        } else {
-            severity_status="Out of Stock";
-        }
-        return ProductDetailDto.builder()
-                .id(product.getId())
-                .name(product.getName())
-                .price(product.getPrice())
-                .discount(product.getDiscount())
-                .inventory(product.getInventory())
-                .severity(severity_status)
-                .sold(product.getSold())
-                .description(product.getDescription())
-                .image(product.getImage())
-                .rate(product.getRate())
-                .seller(UserSellerDto.builder()
-                        .id(product.getUserSeller().getId())
-                        .fname(product.getUserSeller().getFname())
-                        .image(product.getUserSeller().getImage())
-                        .address(product.getUserSeller().getAddress())
-                        .follower(followers+"")
-                        .following(followings+"")
-                        .build())
-                .brand(BrandDto.builder()
-                        .id(product.getBrand().getId())
-                        .name(product.getBrand().getName())
-                        .image(product.getBrand().getImage())
-                        .build())
-                .reviews(product.getReviews().stream().map(review -> ReviewDto.builder()
-                        .id(review.getId())
-                        .comment(review.getComment())
-                        .rating(review.getRating())
-                        .userBuyer(UserSellerDto.builder()
-                                .id(review.getUserBuyer().getId())
-                                .fname(review.getUserBuyer().getFname())
-                                .image(review.getUserBuyer().getImage())
-                                .build())
-                        .build()).collect(Collectors.toList()))
-                .build();
-    }
-
-    @Override
-    public List<ProductDto> getProductForCategory(int category_id) {
-        try {
-            List<Product> products=productRepository.getProductByCategoryId(category_id);
-            ModelMapper modelMapper=new ModelMapper();
-
-            return products.stream().map(product -> modelMapper.map(product,ProductDto.class)).collect(Collectors.toList());
-        }catch (IllegalArgumentException e){
-            System.out.println("Get Product Error: "+e.getMessage());
-            return null;
-        }
-    }
-
-    @Override
-    public List<ProductDto> getProductForBrand(int brand_id) {
-        try {
-            List<Product> products=productRepository.getProductByBrandId(brand_id);
-            ModelMapper modelMapper=new ModelMapper();
-            return products.stream().map(product -> modelMapper.map(product,ProductDto.class)).collect(Collectors.toList());
-        }catch (IllegalArgumentException e){
-            System.out.println("Get Product Error: "+e.getMessage());
-            return null;
-        }
-    }
-
-    @Override
-    public BrandProductResponse get3ProductBestSellerForBrand(int brand_id) {
-        List<Product> products=productRepository.getProductByBrandId(brand_id);
-        ModelMapper modelMapper=new ModelMapper();
-        List<ProductImageDto> productImageDtos=new ArrayList<>();
-        for (int i=0;i<1;i++){
-            productImageDtos.add(modelMapper.map(products.get(i),ProductImageDto.class));
-        }
-        return BrandProductResponse.builder()
-                .brand_id(brand_id)
-                .name(products.get(0).getBrand().getName())
-                .image(products.get(0).getBrand().getImage())
-                .user_seller(modelMapper.map(products.get(0).getUserSeller(), UserSellerDto.class))
-                .products(productImageDtos)
-                .build();
-    }
-
-    @Override
-    public List<String> getAllImageProduct() {
+    public ResponseObject getAllProduct(int brand_id, int seller_id, String sort, int perPage, int currentPage) {
         try{
-            return (List<String>) productRepository.getAllImageProduct();
+            Sort sorting;
+            switch (sort) {
+                case "priceAsc":
+                    sorting = Sort.by("price").ascending();
+                    break;
+                case "priceDesc":
+                    sorting = Sort.by("price").descending();
+                    break;
+                case "nameAsc":
+                    sorting = Sort.by("name").ascending();
+                    break;
+                case "nameDesc":
+                    sorting = Sort.by("name").descending();
+                    break;
+                case "newest":
+                    sorting = Sort.by("createdAt").descending();
+                    break;
+                case "soldAsc":
+                    sorting = Sort.by("sold").ascending();
+                    break;
+                case "soldDesc":
+                    sorting = Sort.by("sold").descending();
+                    break;
+                default:
+                    sorting = Sort.unsorted();  // Hoặc bạn có thể đặt một sắp xếp mặc định tại đây
+                    break;
+            }
+            Pageable pageable;
+            if (sort != null) {
+                pageable = PageRequest.of(currentPage - 1, perPage, sorting); // currentPage - 1 vì trang trong Spring Data JPA bắt đầu từ 0
+            } else {
+                pageable = PageRequest.of(currentPage - 1, perPage);
+            }
+            ModelMapper modelMapper=new ModelMapper();
+            // Lấy trang sản phẩm
+            Page<Product> productPage = new PageImpl<>(Collections.emptyList());
+            if (brand_id==0 && seller_id==0) {
+                productPage = productRepository.findAll(pageable);
+            }else if (brand_id>0 && seller_id==0){
+                productPage = productRepository.findAllByBrandId(brand_id,pageable);
+            }else if (brand_id==0 && seller_id>0){
+                productPage = productRepository.findAllBySellerId(seller_id,pageable);
+            }else if (brand_id>0 && seller_id>0){
+                productPage = productRepository.findAllByBrandIdAndSellerId(brand_id,seller_id,pageable);
+            }
+            List<ProductDto> productDtoPage=productPage.stream().map(product -> modelMapper.map(product,ProductDto.class)).collect(Collectors.toList());
+            return ResponseObject.builder()
+                    .code(200)
+                    .message("Get All Product Successful")
+                    .data(PageProductResponse.builder()
+                            .total_page(productPage.getTotalPages())
+                            .current_page(currentPage)
+                            .per_page(perPage)
+                            .total_product(productPage.getTotalElements())
+                            .data(productDtoPage)
+                            .build())
+                    .build();
         }catch (IllegalArgumentException e){
-            System.out.println("Get All Image Error: "+e.getMessage());
-            return null;
+            return ResponseObject.builder()
+                    .code(400)
+                    .message("Get All Product Error: "+e.getMessage())
+                    .build();
         }
     }
 
+
     @Override
-    public PagedProductResponse getProductBySeller(int seller_id, int perPage, int currentPage) {
-        try {
-            Pageable pageable=PageRequest.of(currentPage-1,perPage);
-            Page<Product> productPage=productRepository.getProductsUserSellerByUserSellerId(seller_id,pageable);
-            ModelMapper modelMapper=new ModelMapper();
-            List<ProductDto> productDtoPage=productPage.stream().map(product -> modelMapper.map(product,ProductDto.class)).collect(Collectors.toList());
-            return PagedProductResponse.builder()
-                    .total_page(productPage.getTotalPages())
-                    .current_page(currentPage)
-                    .per_page(perPage)
-                    .total_product(productPage.getTotalElements())
-                    .products(productDtoPage)
+    public ResponseObject findProductById(int id) {
+        try{
+            Optional<Product> product=productRepository.findById(id);
+            if (product.isEmpty()){
+                return ResponseObject.builder()
+                        .code(400)
+                        .message("Product not found")
+                        .build();
+            }
+            Seller seller = sellerRepository.findById(id).get();
+            Brand brand = brandRepository.findById(id).get();
+            Category category = categoryRepository.findById(id).get();
+            List<ProductType> productTypes=productTypeRepository.findAllByProductId(id);
+            return ResponseObject.builder()
+                    .code(200)
+                    .message("Get Product Successful")
+                    .data(ProductDetailResponse.builder()
+                            .id(product.get().getId())
+                            .name(product.get().getName())
+                            .discount(product.get().getDiscount())
+                            .inventory(product.get().getInventory())
+                            .sold(product.get().getSold())
+                            .description(product.get().getDescription())
+                            .rate(product.get().getRate())
+                            .seller(UserSellerResponse.builder()
+                                    .id(seller.getId())
+                                    .name_store(seller.getNameStore())
+                                    .image(seller.getImage())
+                                    .totalProduct(seller.getTotalProduct())
+                                    .totalFollower(seller.getTotalFollower())
+                                    .totalFeedback(seller.getTotalFeedback())
+                                    .mall(seller.isMall())
+                                    .createdAt(seller.getCreatedAt())
+                                    .build())
+                            .brand(BrandResponse.builder()
+                                    .id(brand.getId())
+                                    .name(brand.getName())
+                                    .image(brand.getImage())
+                                    .build())
+                            .category(CategoryResponse.builder()
+                                    .id(category.getId())
+                                    .name(category.getName())
+                                    .image(category.getImage())
+                                    .build())
+                            .productTypes(productTypes.stream().map(productType -> ProductTypeResponse.builder()
+                                    .id(productType.getId())
+                                    .name(productType.getName())
+                                    .image(productType.getImage())
+                                    .price(productType.getPrice())
+                                    .quantity(productType.getQuantity())
+                                    .build()).collect(Collectors.toList()))
+                            .build())
+
                     .build();
         }catch (IllegalArgumentException e){
             System.out.println("Get Product Error: "+e.getMessage());
@@ -289,18 +386,27 @@ public class ProductServiceImpl implements ProductService {
         }
     }
 
-    @Override
-    public List<ProductDto> findProductByName(String name) {
-        List<Product> products=productRepository.findByNameContainingIgnoreCase(name);
-        ModelMapper modelMapper=new ModelMapper();
-        return products.stream().map(product -> modelMapper.map(product,ProductDto.class)).collect(Collectors.toList());
-    }
 
     @Override
-    public List<ProductsIdResponse> getAllProductId() {
-        List<Product> products=productRepository.findAll();
-        ModelMapper modelMapper=new ModelMapper();
-        return products.stream().map(product -> modelMapper.map(product,ProductsIdResponse.class)).collect(Collectors.toList());
+    public ResponseObject get3ProductBestSellerForBrand(int brand_id) {
+        List<Product> products = productRepository.findTop3ByBrandIdOrderBySoldDesc(brand_id);
+        return ResponseObject.builder()
+                .code(200)
+                .message("Get 3 Product Best Seller For Brand Successful")
+                .data(products.stream().map(product -> ProductBestSellerResponse.class).collect(Collectors.toList()))
+                .build();
+    }
+
+
+    @Override
+    public ResponseObject findProductByName(String name) {
+        List<Product> products = productRepository.findByNameContainingIgnoreCase(name);
+        ModelMapper modelMapper = new ModelMapper();
+        return ResponseObject.builder()
+                .code(200)
+                .message("Get Product Successful")
+                .data(products.stream().map(product -> modelMapper.map(product, ProductDto.class)).collect(Collectors.toList()))
+                .build();
     }
 
     @Override

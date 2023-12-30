@@ -21,38 +21,29 @@ public class OrderItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-
     @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
-
     private int quantity;
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
-
     @ManyToOne
-    @JoinColumn(name = "orderDetail_id")
-    @JsonIgnoreProperties("orderItems")
-    private OrderDetail orderDetail;
+    @JoinColumn(name = "consignee_id")
+    private Consignee consignee;
+    @OneToOne
+    @JoinColumn(name = "product_type_id")
+    private ProductType productType;
     public double getTotalPrice() {
-        return this.product.getPrice() * this.quantity;
+        return this.productType.getPrice() * this.quantity;
     }
     @ManyToOne
-    @JoinColumn(name = "userShipper_id")
-    private User userShipper;
-
+    @JoinColumn(name = "shipper_id")
+    private User shipper;
     private String status= Status.Pending.getOrderStatus();
-    @OneToOne(mappedBy = "orderItem", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private Review review;
-    private Date createDateTime;
-    public String toString() {
-        return "Your Order_ID: " +id+
-                "\n\t Products: " + product +
-                "\n\t Quantity: " + quantity +
-                "\n\t Total Price: " + getTotalPrice() +
-                "\n\t Detail order: "+ orderDetail +
-                "\n\t DateTime create: " + createDateTime;
-    }
+    private boolean isFeedback = false;
+    private Date createdAt;
+    private Date shippedAt;
+    private Date paymentAt;
+    private Date receivedAt;
 }

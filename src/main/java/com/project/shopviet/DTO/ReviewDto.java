@@ -1,5 +1,6 @@
 package com.project.shopviet.DTO;
 
+import com.project.shopviet.DTO.response.UserSellerResponse;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,6 +15,6 @@ public class ReviewDto {
     private int rating;
     private Date createTime;
     private String comment;
-    private UserSellerDto userBuyer;
+    private UserSellerResponse userBuyer;
     private String feedback;
 }

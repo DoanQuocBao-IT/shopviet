@@ -7,13 +7,10 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
-public class ProductCart {
+public class ItemCartResponse {
     private int id;
     private String name;
-    private int price;
-    private int discount;
-    private String image;
-    private int inventory;
+    private ProductTypeResponse product_type;
     private int quantity;
-    private double totalPrice;
+    private Long total_price;
 }

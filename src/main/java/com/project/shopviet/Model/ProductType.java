@@ -6,25 +6,22 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name="cart")
-public class Cart {
+@Table(name = "product_type")
+public class ProductType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-
-    @OneToMany
-    @JoinColumn(name = "cart_id")
-    private List<CartSellerItem> cartSellerItems;
-
-
-    @OneToOne
-    @JoinColumn(name = "buyer_id")
-    private User buyer;
+    private String name;
+    private String image;
+    private Long price;
+    private int quantity;
+    @ManyToOne
+    @JoinColumn(name = "product_id")
+    private Product product;
 }

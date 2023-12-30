@@ -1,16 +1,19 @@
 package com.project.shopviet.Service.ServiceImpl;
 
-import com.project.shopviet.DTO.BrandDto;
-import com.project.shopviet.DTO.BrandProductDto;
-import com.project.shopviet.DTO.response.BrandProductResponse;
+import com.project.shopviet.DTO.request.BrandRequest;
 import com.project.shopviet.DTO.response.BrandResponse;
-import com.project.shopviet.DTO.response.CategoryIdBrandResponse;
+import com.project.shopviet.DTO.response.ResponseObject;
 import com.project.shopviet.Model.Brand;
+import com.project.shopviet.Model.Seller;
+import com.project.shopviet.Model.User;
 import com.project.shopviet.Repository.BrandRepository;
+import com.project.shopviet.Repository.SellerRepository;
+import com.project.shopviet.Repository.UserRepository;
 import com.project.shopviet.Service.BrandService;
 import com.project.shopviet.Service.ProductService;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,11 +26,34 @@ public class BrandServiceImpl implements BrandService {
     BrandRepository brandRepository;
     @Autowired
     ProductService productService;
+    @Autowired
+    UserRepository userRepository;
+    @Autowired
+    SellerRepository sellerRepository;
 
     @Override
-    public Brand addBrand(Brand brand) {
+    public ResponseObject addBrand(BrandRequest brand) {
         try {
-            return brandRepository.save(brand);
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String currentPrincipalName = authentication.getName();
+            User userSeller=userRepository.findUserByName(currentPrincipalName);
+            Optional<Seller> seller=sellerRepository.findByUserId(userSeller.getId());
+            if(seller.isEmpty()) {
+                return ResponseObject.builder()
+                        .code(400)
+                        .message("Seller not found")
+                        .build();
+            }
+            Brand newBrand=new Brand();
+            newBrand.setName(brand.getName());
+            newBrand.setImage(brand.getImage());
+            newBrand.setUserSeller(seller.get());
+            brandRepository.save(newBrand);
+            return ResponseObject.builder()
+                    .code(200)
+                    .message("Add Brand Success")
+                    .data(newBrand)
+                    .build();
         }catch (IllegalArgumentException e){
             System.out.println("Add Brand Error: "+e.getMessage());
             return null;
@@ -35,85 +61,89 @@ public class BrandServiceImpl implements BrandService {
     }
 
     @Override
-    public String deleteBrand(int id) {
+    public ResponseObject deleteBrand(int id) {
         try {
-            brandRepository.deleteById(id);
-            return "Xoa thanh cong Brand";
-        }catch (IllegalArgumentException e){
-            System.out.println("Delete Brand Error: "+e.getMessage());
-            return null;
-        }
-    }
-
-    @Override
-    public Brand updateBrand(int id, Brand brand) {
-        try {
-            if(isExistById(id)){
-                Brand currentBrand=brandRepository.findById(id).get();
-                currentBrand.setName(brand.getName());
-                currentBrand.setImage(brand.getImage());
-                currentBrand.setCategory(brand.getCategory());
-                brandRepository.save(currentBrand);
-                return currentBrand;
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String currentPrincipalName = authentication.getName();
+            User userSeller = userRepository.findUserByName(currentPrincipalName);
+            Optional<Seller> seller = sellerRepository.findByUserId(userSeller.getId());
+            if (seller.isEmpty()) {
+                return ResponseObject.builder()
+                        .code(400)
+                        .message("Seller not found")
+                        .build();
             }
-            else return null;
-        }catch (IllegalArgumentException e){
-            System.out.println("Update Brand Error: "+e.getMessage());
+            if (!isExistById(id)) {
+                return ResponseObject.builder()
+                        .code(400)
+                        .message("Brand not found")
+                        .build();
+            }
+            Brand brand = brandRepository.findByIdAndUserSellerId(id, seller.get().getId()).get();
+            brandRepository.delete(brand);
+            return ResponseObject.builder()
+                    .code(200)
+                    .message("Delete Brand Success")
+                    .data(brand)
+                    .build();
+
+        } catch (IllegalArgumentException e) {
+            System.out.println("Delete Brand Error: " + e.getMessage());
             return null;
         }
     }
 
     @Override
-    public List<BrandDto> getAllBrand() {
+    public ResponseObject updateBrand(int id, BrandRequest brand) {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String currentPrincipalName = authentication.getName();
+            User userSeller = userRepository.findUserByName(currentPrincipalName);
+            Optional<Seller> seller = sellerRepository.findByUserId(userSeller.getId());
+            if (seller.isEmpty()) {
+                return ResponseObject.builder()
+                        .code(400)
+                        .message("Seller not found")
+                        .build();
+            }
+            if (!isExistById(id)) {
+                return ResponseObject.builder()
+                        .code(400)
+                        .message("Brand not found")
+                        .build();
+            }
+            Brand oldBrand = brandRepository.findByIdAndUserSellerId(id, seller.get().getId()).get();
+            oldBrand.setName(brand.getName());
+            oldBrand.setImage(brand.getImage());
+            brandRepository.save(oldBrand);
+            return ResponseObject.builder()
+                    .code(200)
+                    .message("Update Brand Success")
+                    .data(oldBrand)
+                    .build();
+
+        } catch (IllegalArgumentException e) {
+            System.out.println("Update Brand Error: " + e.getMessage());
+            return null;
+        }
+    }
+
+    @Override
+    public ResponseObject getAllBrand() {
         try{
             List<Brand> brands=brandRepository.findAll();
-            ModelMapper modelMapper = new ModelMapper(); // khởi tạo đối tượng modelMapper
-            return brands.stream().map(brand -> modelMapper.map(brand,BrandDto.class)).collect(Collectors.toList());
-        }catch (IllegalArgumentException e){
-            System.out.println("Get All Brand Error: "+e.getMessage());
-            return null;
-        }
-    }
-
-    @Override
-    public List<BrandResponse> get5BrandBestSeller() {
-        List<Brand> brands=brandRepository.findAll();
-        ModelMapper modelMapper=new ModelMapper();
-        return brands.stream().map(brand -> modelMapper.map(brand,BrandResponse.class)).collect(Collectors.toList());
-    }
-
-    @Override
-    public List<BrandProductDto> getAllBrandProduct() {
-        List<Brand> brands=brandRepository.findAll();
-        ModelMapper modelMapper=new ModelMapper();
-        return brands.stream().map(brand -> modelMapper.map(brand,BrandProductDto.class)).collect(Collectors.toList());
-    }
-
-    @Override
-    public CategoryIdBrandResponse getAllBrandProductByCategoryId(String name) {
-        List<BrandProductResponse> brandProductResponses=brandRepository.getBrandByCategoryName(name).stream().map(brand ->
-                productService.get3ProductBestSellerForBrand(brand.getId())).collect(Collectors.toList());
-        return CategoryIdBrandResponse.builder()
-                .name(name)
-                .brand(brandProductResponses).build();
-    }
-
-    @Override
-    public List<BrandDto> getBrandByCategoryId(int id) {
-        try{
-            List<Brand> brands=brandRepository.getBrandByCategoryId(id);
-            ModelMapper modelMapper = new ModelMapper(); // khởi tạo đối tượng modelMapper
-            return brands.stream().map(brand -> modelMapper.map(brand,BrandDto.class)).collect(Collectors.toList());
-        }catch (IllegalArgumentException e){
-            System.out.println("Get All Brand Error: "+e.getMessage());
-            return null;
-        }
-    }
-
-    @Override
-    public Optional<Brand> getBrand(int id) {
-        try{
-            return (Optional<Brand>) brandRepository.findById(id);
+            return ResponseObject.builder()
+                    .code(200)
+                    .message("Get All Brand Success")
+                    .data(brands.stream().map(brand -> {
+                        return BrandResponse.builder()
+                                .id(brand.getId())
+                                .name(brand.getName())
+                                .image(brand.getImage())
+                                .total_product(brand.getProductCount())
+                                .build();
+                    }).collect(Collectors.toList()))
+                    .build();
         }catch (IllegalArgumentException e){
             System.out.println("Get All Brand Error: "+e.getMessage());
             return null;

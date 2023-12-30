@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -17,17 +18,15 @@ public class CartItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-
     @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
-
+    @OneToOne
+    @JoinColumn(name = "product_type_id")
+    private ProductType productType;
     private int quantity;
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
-    public double getTotalPrice() {
-        return this.product.getPrice() * this.quantity;
-    }
-
+    private Date createdAt;
 }

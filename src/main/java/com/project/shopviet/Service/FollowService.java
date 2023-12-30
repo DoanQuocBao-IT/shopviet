@@ -1,11 +1,10 @@
 package com.project.shopviet.Service;
 
-import com.project.shopviet.DTO.response.Response;
-import com.project.shopviet.Model.Follow;
+import com.project.shopviet.DTO.response.ResponseObject;
 
 public interface FollowService {
-    Response addFollow(int followUser);
-    Response unFollow(int followUser);
+    ResponseObject addFollow(int followUser);
+    ResponseObject unFollow(int followUser);
     int countFollowers(int followUser);
     int countFollowings(int followUser);
 }

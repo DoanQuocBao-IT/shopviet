@@ -2,6 +2,7 @@ package com.project.shopviet.Service;
 
 import com.project.shopviet.DTO.RegisterDto;
 import com.project.shopviet.DTO.UserDto;
+import com.project.shopviet.DTO.request.LoginRequest;
 import com.project.shopviet.DTO.request.RegisterSellerRequest;
 import com.project.shopviet.DTO.response.ResponseObject;
 import com.project.shopviet.DTO.response.UserSellerResponse;
@@ -14,6 +15,7 @@ import java.util.Set;
 
 public interface UserService {
     void addRoleToUser(int userId, int roleId);
+    ResponseObject login(LoginRequest loginRequest);
 
     ResponseObject registerUserBuyer(RegisterDto registerDto);
 

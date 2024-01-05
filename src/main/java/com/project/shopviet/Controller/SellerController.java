@@ -29,7 +29,7 @@ public class SellerController {
     @Autowired
     BrandService brandService;
 
-    @GetMapping("/register")
+    @PostMapping("/register")
     public ResponseObject registerSeller(@RequestBody RegisterSellerRequest register) {
         return userService.registerUserSeller(register);
     }

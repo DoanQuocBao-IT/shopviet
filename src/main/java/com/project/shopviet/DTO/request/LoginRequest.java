@@ -1,4 +1,4 @@
-package com.project.shopviet.JWT;
+package com.project.shopviet.DTO.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class JwtRequest {
+public class LoginRequest {
     private String username;
     private String password;
 }

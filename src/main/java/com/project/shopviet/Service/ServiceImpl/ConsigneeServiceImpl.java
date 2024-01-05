@@ -42,7 +42,7 @@ public class ConsigneeServiceImpl implements ConsigneeService {
             consignee.setArea(!Objects.equals(consigneeDto.getProvince(), "")
                     && !Objects.equals(consigneeDto.getDistrict(), "")
                     && !Objects.equals(consigneeDto.getPrecinct(), "")
-                    ? areaRepository.findByProvinceAndDistrictAndPrecinctAndStatus(consigneeDto.getProvince(), consigneeDto.getDistrict(), consigneeDto.getPrecinct(), "1")
+                    ? areaRepository.findAreaByProvinceAndDistrictAndPrecinctAndStatus(consigneeDto.getProvince(), consigneeDto.getDistrict(), consigneeDto.getPrecinct(), "1")
                     : null
             );
             consigneeRepository.save(consignee);
@@ -78,7 +78,7 @@ public class ConsigneeServiceImpl implements ConsigneeService {
             consignee.setArea(!Objects.equals(consigneeDto.getProvince(), "")
                     && !Objects.equals(consigneeDto.getDistrict(), "")
                     && !Objects.equals(consigneeDto.getPrecinct(), "")
-                    ? areaRepository.findByProvinceAndDistrictAndPrecinctAndStatus(consigneeDto.getProvince(), consigneeDto.getDistrict(), consigneeDto.getPrecinct(), "1")
+                    ? areaRepository.findAreaByProvinceAndDistrictAndPrecinctAndStatus(consigneeDto.getProvince(), consigneeDto.getDistrict(), consigneeDto.getPrecinct(), "1")
                     : null
             );
             consigneeRepository.save(consignee);

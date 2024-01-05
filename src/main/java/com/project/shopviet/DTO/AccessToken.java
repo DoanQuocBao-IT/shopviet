@@ -7,9 +7,9 @@ import java.util.Set;
 
 @Getter
 public class AccessToken {
-    private final String accessToken;
+    private final String access_token;
 
-    public AccessToken(String accessToken) {
-        this.accessToken = accessToken;
+    public AccessToken(String access_token) {
+        this.access_token = access_token;
     }
 }

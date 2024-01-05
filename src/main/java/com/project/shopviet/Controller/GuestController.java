@@ -28,6 +28,10 @@ public class GuestController {
     public ResponseObject getAllCategory() {
         return categoryService.getAllCategory();
     }
+    @GetMapping("/categories/parent")
+    public ResponseObject getAllCategoryParentAndChild() {
+        return categoryService.getAllCategoryParentAndChild();
+    }
 
     @GetMapping("/brands")
     public ResponseObject getAllBrand() {

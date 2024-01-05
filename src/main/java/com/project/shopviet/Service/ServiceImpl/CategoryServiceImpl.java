@@ -1,29 +1,37 @@
 package com.project.shopviet.Service.ServiceImpl;
 
-import com.project.shopviet.DTO.CategoryDto;
 import com.project.shopviet.DTO.request.CategoryRequest;
+import com.project.shopviet.DTO.response.CategoryDetailResponse;
 import com.project.shopviet.DTO.response.CategoryResponse;
 import com.project.shopviet.DTO.response.ResponseObject;
 import com.project.shopviet.Model.Category;
 import com.project.shopviet.Repository.CategoryRepository;
 import com.project.shopviet.Service.CategoryService;
+import com.project.shopviet.Service.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
     @Autowired
     CategoryRepository categoryRepository;
+    @Autowired
+    ImageService imageService;
     @Override
     public ResponseObject addCategory(CategoryRequest cat) {
         try{
             Category category = new Category();
             category.setName(cat.getName());
-            category.setImage(cat.getImage());
+            if (cat.getImage()!=null) {
+                category.setImage(imageService.saveImage(cat.getImage()));
+            }
             category.setDescription(cat.getDescription());
+            category.setCreatedAt(new Date());
+            category.setUpdatedAt(new Date());
             if (cat.getParent_id()<0) {
                 return ResponseObject.builder()
                         .code(400)
@@ -60,22 +68,24 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public ResponseObject deleteCategory(int id) {
-        try{
+        try {
             if (!isExistById(id)) {
                 return ResponseObject.builder()
                         .code(400)
                         .message("Category not found")
                         .build();
             }
-            categoryRepository.deleteById(id);
+            if (imageService.deleteImage(categoryRepository.findById(id).get().getImage())) {
+                categoryRepository.deleteById(id);
+            }
             return ResponseObject.builder()
                     .code(200)
                     .message("Delete Category Successful")
                     .build();
-        }catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             return ResponseObject.builder()
                     .code(400)
-                    .message("Delete Category Error: "+e.getMessage())
+                    .message("Delete Category Error: " + e.getMessage())
                     .build();
         }
     }
@@ -91,29 +101,13 @@ public class CategoryServiceImpl implements CategoryService {
             }
             Category cat = categoryRepository.findById(id).get();
             cat.setName(category.getName());
-            cat.setImage(category.getImage());
+            if (category.getImage() != null && !category.getImage().equals(cat.getImage())) {
+                if (imageService.deleteImage(cat.getImage())) {
+                    cat.setImage(imageService.saveImage(category.getImage()));
+                }
+            }
             cat.setDescription(category.getDescription());
-            if (category.getParent_id()<0) {
-                return ResponseObject.builder()
-                        .code(400)
-                        .message("Parent Id must be greater than 0")
-                        .build();
-            }
-            if (category.getParent_id()==0) {
-                cat.setParentId(0);
-                categoryRepository.save(cat);
-                return ResponseObject.builder()
-                        .code(200)
-                        .message("Update Category Successful")
-                        .build();
-            }
-            if (!isExistById(category.getParent_id())) {
-                return ResponseObject.builder()
-                        .code(400)
-                        .message("Parent Category not found")
-                        .build();
-            }
-            cat.setParentId(category.getParent_id());
+            cat.setUpdatedAt(new Date());
             categoryRepository.save(cat);
             return ResponseObject.builder()
                     .code(200)
@@ -122,7 +116,7 @@ public class CategoryServiceImpl implements CategoryService {
         } catch (IllegalArgumentException e) {
             return ResponseObject.builder()
                     .code(400)
-                    .message("Update Category Error: "+e.getMessage())
+                    .message("Update Category Error: " + e.getMessage())
                     .build();
         }
     }
@@ -131,14 +125,26 @@ public class CategoryServiceImpl implements CategoryService {
     public ResponseObject getAllCategory() {
         try {
             List<Category> categories = categoryRepository.findAllParentCategory();
-            List<CategoryDto> categoryResponses = new ArrayList<>();
-            for (Category category : categories) {
-                CategoryDto categoryDto = new CategoryDto();
-                categoryDto.setId(category.getId());
-                categoryDto.setName(category.getName());
-                categoryDto.setImage(category.getImage());
-                categoryResponses.add(categoryDto);
-            }
+            List<CategoryResponse> categoryResponses = new ArrayList<>();
+            categories.forEach(category -> {
+                List<Category> childCategories = categoryRepository.findAllChildCategory(category.getId());
+                List<CategoryResponse> childCategoryResponses = new ArrayList<>();
+                childCategories.forEach(childCategory -> {
+                    CategoryResponse childCategoryResponse = CategoryResponse.builder()
+                            .id(childCategory.getId())
+                            .name(childCategory.getName())
+                            .image(childCategory.getImage())
+                            .build();
+                    childCategoryResponses.add(childCategoryResponse);
+                });
+                CategoryResponse categoryResponse = CategoryResponse.builder()
+                        .id(category.getId())
+                        .name(category.getName())
+                        .image(category.getImage())
+                        .child(childCategoryResponses)
+                        .build();
+                categoryResponses.add(categoryResponse);
+            });
             return ResponseObject.builder()
                     .code(200)
                     .message("Get All Category Successful")
@@ -147,7 +153,54 @@ public class CategoryServiceImpl implements CategoryService {
         } catch (IllegalArgumentException e) {
             return ResponseObject.builder()
                     .code(400)
-                    .message("Get All Category Error: "+e.getMessage())
+                    .message("Get All Category Error: " + e.getMessage())
+                    .build();
+        }
+    }
+
+    @Override
+    public ResponseObject getAllCategoryParentAndChild() {
+        try {
+            List<Category> categories = categoryRepository.findAllParentCategory();
+            List<CategoryDetailResponse> categoryResponses = new ArrayList<>();
+            categories.forEach(category -> {
+                List<Category> childCategories = categoryRepository.findAllChildCategory(category.getId());
+                List<CategoryDetailResponse> childCategoryResponses = new ArrayList<>();
+                childCategories.forEach(childCategory -> {
+                    CategoryDetailResponse childCategoryResponse = CategoryDetailResponse.builder()
+                            .id(childCategory.getId())
+                            .name(childCategory.getName())
+                            .image(childCategory.getImage())
+                            .description(childCategory.getDescription())
+                            .status(childCategory.getStatus())
+                            .priority(childCategory.getPriority())
+                            .created_at(childCategory.getCreatedAt())
+                            .updated_at(childCategory.getUpdatedAt())
+                            .build();
+                    childCategoryResponses.add(childCategoryResponse);
+                });
+                CategoryDetailResponse categoryResponse = CategoryDetailResponse.builder()
+                        .id(category.getId())
+                        .name(category.getName())
+                        .image(category.getImage())
+                        .description(category.getDescription())
+                        .status(category.getStatus())
+                        .priority(category.getPriority())
+                        .created_at(category.getCreatedAt())
+                        .updated_at(category.getUpdatedAt())
+                        .child(childCategoryResponses)
+                        .build();
+                categoryResponses.add(categoryResponse);
+            });
+            return ResponseObject.builder()
+                    .code(200)
+                    .message("Get All Category Successful")
+                    .data(categoryResponses)
+                    .build();
+        } catch (IllegalArgumentException e) {
+            return ResponseObject.builder()
+                    .code(400)
+                    .message("Get All Category Error: " + e.getMessage())
                     .build();
         }
     }

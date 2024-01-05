@@ -1,8 +1,5 @@
 package com.project.shopviet.DTO.response;
 
-import com.project.shopviet.DTO.BrandDto;
-import com.project.shopviet.DTO.CategoryDto;
-import com.project.shopviet.DTO.ProductTypeDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;

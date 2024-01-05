@@ -36,15 +36,15 @@ public class BrandServiceImpl implements BrandService {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String currentPrincipalName = authentication.getName();
-            User userSeller=userRepository.findUserByName(currentPrincipalName);
-            Optional<Seller> seller=sellerRepository.findByUserId(userSeller.getId());
-            if(seller.isEmpty()) {
+            User userSeller = userRepository.findUserByName(currentPrincipalName);
+            Optional<Seller> seller = sellerRepository.findByUserId(userSeller.getId());
+            if (seller.isEmpty()) {
                 return ResponseObject.builder()
                         .code(400)
                         .message("Seller not found")
                         .build();
             }
-            Brand newBrand=new Brand();
+            Brand newBrand = new Brand();
             newBrand.setName(brand.getName());
             newBrand.setImage(brand.getImage());
             newBrand.setUserSeller(seller.get());
@@ -52,11 +52,12 @@ public class BrandServiceImpl implements BrandService {
             return ResponseObject.builder()
                     .code(200)
                     .message("Add Brand Success")
-                    .data(newBrand)
                     .build();
-        }catch (IllegalArgumentException e){
-            System.out.println("Add Brand Error: "+e.getMessage());
-            return null;
+        } catch (IllegalArgumentException e) {
+            return ResponseObject.builder()
+                    .code(400)
+                    .message("Add Brand Error")
+                    .build();
         }
     }
 
@@ -84,12 +85,13 @@ public class BrandServiceImpl implements BrandService {
             return ResponseObject.builder()
                     .code(200)
                     .message("Delete Brand Success")
-                    .data(brand)
                     .build();
 
         } catch (IllegalArgumentException e) {
-            System.out.println("Delete Brand Error: " + e.getMessage());
-            return null;
+            return ResponseObject.builder()
+                    .code(400)
+                    .message("Delete Brand Error")
+                    .build();
         }
     }
 
@@ -119,19 +121,20 @@ public class BrandServiceImpl implements BrandService {
             return ResponseObject.builder()
                     .code(200)
                     .message("Update Brand Success")
-                    .data(oldBrand)
                     .build();
 
         } catch (IllegalArgumentException e) {
-            System.out.println("Update Brand Error: " + e.getMessage());
-            return null;
+            return ResponseObject.builder()
+                    .code(400)
+                    .message("Update Brand Error")
+                    .build();
         }
     }
 
     @Override
     public ResponseObject getAllBrand() {
-        try{
-            List<Brand> brands=brandRepository.findAll();
+        try {
+            List<Brand> brands = brandRepository.findAll();
             return ResponseObject.builder()
                     .code(200)
                     .message("Get All Brand Success")
@@ -144,9 +147,11 @@ public class BrandServiceImpl implements BrandService {
                                 .build();
                     }).collect(Collectors.toList()))
                     .build();
-        }catch (IllegalArgumentException e){
-            System.out.println("Get All Brand Error: "+e.getMessage());
-            return null;
+        } catch (IllegalArgumentException e) {
+            return ResponseObject.builder()
+                    .code(400)
+                    .message("Get All Brand Error")
+                    .build();
         }
     }
 

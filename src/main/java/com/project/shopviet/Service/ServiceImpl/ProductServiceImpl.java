@@ -121,6 +121,8 @@ public class ProductServiceImpl implements ProductService {
                         .message("Product not found")
                         .build();
             }
+            List<ProductType> productTypes=productTypeRepository.findByProduct_Id(id);
+            productTypeRepository.deleteAll(productTypes);
             productRepository.delete(product.get());
             return ResponseObject.builder()
                     .code(200)
@@ -338,7 +340,7 @@ public class ProductServiceImpl implements ProductService {
             Seller seller = sellerRepository.findById(id).get();
             Brand brand = brandRepository.findById(id).get();
             Category category = categoryRepository.findById(id).get();
-            List<ProductType> productTypes=productTypeRepository.findAllByProductId(id);
+            List<ProductType> productTypes=productTypeRepository.findByProduct_Id(id);
             return ResponseObject.builder()
                     .code(200)
                     .message("Get Product Successful")

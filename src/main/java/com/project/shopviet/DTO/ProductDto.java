@@ -14,5 +14,7 @@ public class ProductDto {
     private int discount;
     private int sold;
     private double rate;
-    private List<ProductTypeDto> productTypes;
+    private String image;
+    private Long price;
+    private String province;
 }

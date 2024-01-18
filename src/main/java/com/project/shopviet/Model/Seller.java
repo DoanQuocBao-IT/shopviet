@@ -31,6 +31,7 @@ public class Seller {
     private int status = 1;
     private String reasonBlock;
     private Date createdAt;
+    private Date updatedAt;
     @ManyToOne
     @JoinColumn(name = "area_id")
     private Area area;

@@ -159,6 +159,32 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    public ResponseObject getAllCategoryChild() {
+        try {
+            List<Category> categories = categoryRepository.findAllChildCategory();
+            List<CategoryResponse> categoryResponses = new ArrayList<>();
+            categories.forEach(category -> {
+                CategoryResponse categoryResponse = CategoryResponse.builder()
+                        .id(category.getId())
+                        .name(category.getName())
+                        .image(category.getImage())
+                        .build();
+                categoryResponses.add(categoryResponse);
+            });
+            return ResponseObject.builder()
+                    .code(200)
+                    .message("Get All Category Successful")
+                    .data(categoryResponses)
+                    .build();
+        } catch (IllegalArgumentException e) {
+            return ResponseObject.builder()
+                    .code(400)
+                    .message("Get All Category Error: " + e.getMessage())
+                    .build();
+        }
+    }
+
+    @Override
     public ResponseObject getAllCategoryParentAndChild() {
         try {
             List<Category> categories = categoryRepository.findAllParentCategory();

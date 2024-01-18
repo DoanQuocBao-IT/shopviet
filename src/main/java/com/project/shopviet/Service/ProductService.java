@@ -11,7 +11,9 @@ public interface ProductService {
     ResponseObject getAllProduct(int brand_id,int seller_id,String sort, int perPage, int currentPage);
 
     ResponseObject findProductById(int id);
-    ResponseObject get3ProductBestSellerForBrand(int brand_id);
+    ResponseObject findProductEditById(int id);
+    ResponseObject getProductForSeller(int seller_id);
+    ResponseObject getProductForSeller();
     ResponseObject findProductByName(String name);
     boolean isExistById(int id);
 }

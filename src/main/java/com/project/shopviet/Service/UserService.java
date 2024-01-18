@@ -21,6 +21,11 @@ public interface UserService {
 
     ResponseObject registerUserSeller(RegisterSellerRequest registerDto);
 
+    ResponseObject getProfileSeller(int id);
+
+    ResponseObject getProfileForSeller();
+    ResponseObject updateProfileSeller(RegisterSellerRequest registerDto);
+
     String addRoleUser(String username, String name);
 
     Optional<User> getUserByUsername(String username);

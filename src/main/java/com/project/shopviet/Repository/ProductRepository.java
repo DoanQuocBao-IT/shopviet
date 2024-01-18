@@ -4,7 +4,6 @@ import com.project.shopviet.Model.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -19,4 +18,5 @@ public interface ProductRepository extends JpaRepository<Product,Integer> {
     Page<Product> findAllByBrandIdAndSellerId(int brand_id,int seller_id, Pageable pageable);
     List<Product> findByNameContainingIgnoreCase(String name);
     List<Product> findTop3ByBrandIdOrderBySoldDesc(int brand_id);
+    List<Product> findAllByBrandId(int brand_id);
 }

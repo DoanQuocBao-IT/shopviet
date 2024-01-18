@@ -10,5 +10,7 @@ public interface BrandService {
     ResponseObject deleteBrand(int id);
     ResponseObject updateBrand(int id,BrandRequest brand);
     ResponseObject getAllBrand();
+    ResponseObject getBrandBySeller();
+    ResponseObject getBrandBySellerId(int id);
     boolean isExistById(int id);
 }

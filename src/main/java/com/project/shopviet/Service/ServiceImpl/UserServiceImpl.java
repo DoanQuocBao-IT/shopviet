@@ -5,6 +5,7 @@ import com.project.shopviet.DTO.UserDto;
 import com.project.shopviet.DTO.request.LoginRequest;
 import com.project.shopviet.DTO.request.RegisterSellerRequest;
 import com.project.shopviet.DTO.response.LoginResponse;
+import com.project.shopviet.DTO.response.ProfileSellerResponse;
 import com.project.shopviet.DTO.response.ResponseObject;
 import com.project.shopviet.DTO.response.UserSellerResponse;
 import com.project.shopviet.JWT.JwtTokenProvider;
@@ -215,6 +216,133 @@ public class UserServiceImpl implements UserService {
             return ResponseObject.builder()
                     .code(400)
                     .message("Register User Error: " + e.getMessage())
+                    .build();
+        }
+    }
+
+    @Override
+    public ResponseObject getProfileSeller(int id) {
+        try {
+            Optional<Seller> seller = sellerRepository.findById(id);
+            if (seller.isEmpty()) {
+                return ResponseObject.builder()
+                        .code(400)
+                        .message("Seller not found")
+                        .build();
+            }
+            return ResponseObject.builder()
+                    .code(200)
+                    .message("Get Profile Seller Success")
+                    .data(UserSellerResponse.builder()
+                            .id(seller.get().getId())
+                            .name_store(seller.get().getNameStore())
+                            .description(seller.get().getDescription())
+                            .image(seller.get().getImage())
+                            .totalProduct(seller.get().getTotalProduct())
+                            .totalFollower(seller.get().getTotalFollower())
+                            .totalFeedback(seller.get().getTotalFeedback())
+                            .rate(seller.get().getRate())
+                            .mall(seller.get().isMall())
+                            .createdAt(seller.get().getCreatedAt())
+                            .build())
+                    .build();
+        } catch (IllegalArgumentException e) {
+            return ResponseObject.builder()
+                    .code(400)
+                    .message("Get Profile Seller Error: " + e.getMessage())
+                    .build();
+        }
+    }
+
+    @Override
+    public ResponseObject getProfileForSeller() {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String currentPrincipalName = authentication.getName();
+            User userSeller = userRepository.findUserByName(currentPrincipalName);
+            if (userSeller == null) {
+                return ResponseObject.builder()
+                        .code(400)
+                        .message("User not found")
+                        .build();
+            }
+            Optional<Seller> seller = sellerRepository.findByUserId(userSeller.getId());
+            if (seller.isEmpty()) {
+                return ResponseObject.builder()
+                        .code(400)
+                        .message("Seller not found")
+                        .build();
+            }
+            return ResponseObject.builder()
+                    .code(200)
+                    .message("Get Profile Seller Success")
+                    .data(ProfileSellerResponse.builder()
+                            .id(seller.get().getId())
+                            .name_store(seller.get().getNameStore())
+                            .image(seller.get().getImage())
+                            .totalProduct(seller.get().getTotalProduct())
+                            .totalFollow(seller.get().getTotalFollow())
+                            .totalFollower(seller.get().getTotalFollower())
+                            .totalFeedback(seller.get().getTotalFeedback())
+                            .rate(seller.get().getRate())
+                            .mall(seller.get().isMall())
+                            .createdAt(seller.get().getCreatedAt())
+                            .updatedAt(seller.get().getUpdatedAt())
+                            .description(seller.get().getDescription())
+                            .address(seller.get().getAddress()+", "+seller.get().getArea().getFullName())
+                            .phone(userSeller.getPhone())
+                            .build()
+                    )
+                    .build();
+        } catch (IllegalArgumentException e) {
+            return ResponseObject.builder()
+                    .code(400)
+                    .message("Get Profile Seller Error: " + e.getMessage())
+                    .build();
+        }
+    }
+
+    @Override
+    public ResponseObject updateProfileSeller(RegisterSellerRequest registerDto) {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String currentPrincipalName = authentication.getName();
+            User userSeller = userRepository.findUserByName(currentPrincipalName);
+            if (userSeller == null) {
+                return ResponseObject.builder()
+                        .code(400)
+                        .message("User not found")
+                        .build();
+            }
+            Optional<Seller> seller = sellerRepository.findByUserId(userSeller.getId());
+            if (seller.isEmpty()) {
+                return ResponseObject.builder()
+                        .code(400)
+                        .message("Seller not found")
+                        .build();
+            }
+            seller.get().setNameStore(registerDto.getName_store());
+            seller.get().setImage(registerDto.getImage());
+            seller.get().setDescription(registerDto.getDescription());
+            seller.get().setAddress(registerDto.getAddress());
+            Area area = areaRepository.findAreaByProvinceAndDistrictAndPrecinctAndStatus(registerDto.getProvince(), registerDto.getDistrict(), registerDto.getPrecinct(), "1");
+            if (area == null) {
+                return ResponseObject.builder()
+                        .code(400)
+                        .message("Area not found")
+                        .build();
+            }
+            seller.get().setArea(area);
+            seller.get().setUpdatedAt(new Date());
+            sellerRepository.save(seller.get());
+            return ResponseObject.builder()
+                    .code(200)
+                    .message("Update Profile Seller Success")
+                    .build();
+        } catch (IllegalArgumentException e) {
+            return ResponseObject.builder()
+                    .code(400)
+                    .message("Update Profile Seller Error: " + e.getMessage())
                     .build();
         }
     }

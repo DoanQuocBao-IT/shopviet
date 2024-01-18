@@ -33,6 +33,12 @@ public class SellerController {
     public ResponseObject registerSeller(@RequestBody RegisterSellerRequest register) {
         return userService.registerUserSeller(register);
     }
+
+    @GetMapping("/profile")
+    public ResponseObject getProfile() {
+        return userService.getProfileForSeller();
+    }
+
     @PostMapping("/product")
     public ResponseObject addProduct(@RequestBody ProductRequest product) {
         return productService.addProductBySeller(product);
@@ -46,6 +52,16 @@ public class SellerController {
     @PutMapping("/product/{id}")
     public ResponseObject updateProduct(@RequestBody ProductRequest product, @PathVariable int id) {
         return productService.updateProduct(id, product);
+    }
+
+    @GetMapping("/product/seller")
+    public ResponseObject getProductForBrand() {
+        return productService.getProductForSeller();
+    }
+
+    @GetMapping("/brand")
+    public ResponseObject getAllBrandBySeller() {
+        return brandService.getBrandBySeller();
     }
 
     @PostMapping("/brand")

@@ -35,13 +35,14 @@ public class ProductServiceImpl implements ProductService {
     CategoryRepository categoryRepository;
     @Autowired
     ProductTypeRepository productTypeRepository;
+    private int inventory;
     @Override
     public ResponseObject addProductBySeller(ProductRequest productRequest) {
-        try{
+        try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User userSeller = userRepository.findUserByName(authentication.getName());
             Optional<Seller> seller = sellerRepository.findByUserId(userSeller.getId());
-            if (!seller.isPresent()){
+            if (!seller.isPresent()) {
                 return ResponseObject.builder()
                         .code(400)
                         .message("You are not a seller")
@@ -50,20 +51,21 @@ public class ProductServiceImpl implements ProductService {
             Product product = new Product();
             product.setName(productRequest.getName());
             product.setDescription(productRequest.getDescription());
+            product.setProvince(productRequest.getProvince());
             product.setDiscount(productRequest.getDiscount());
-            product.setInventory(productRequest.getInventory());
-            Optional<Brand> brand=brandRepository.findById(productRequest.getBrand_id());
-            if (brand.isEmpty()){
+//            product.setInventory(productRequest.getInventory());
+            Optional<Brand> brand = brandRepository.findById(productRequest.getBrand_id());
+            if (brand.isEmpty()) {
                 return ResponseObject.builder()
                         .code(400)
                         .message("Brand not found")
                         .build();
             }
-            brand.get().setProductCount(brand.get().getProductCount()+1);
+            brand.get().setProductCount(brand.get().getProductCount() + 1);
             brandRepository.save(brand.get());
             product.setBrand(brand.get());
-            Optional<Category> category=categoryRepository.findById(productRequest.getCategory_id());
-            if (category.isEmpty()){
+            Optional<Category> category = categoryRepository.findById(productRequest.getCategory_id());
+            if (category.isEmpty()) {
                 return ResponseObject.builder()
                         .code(400)
                         .message("Category not found")
@@ -73,12 +75,19 @@ public class ProductServiceImpl implements ProductService {
             product.setSeller(seller.get());
             product.setCreatedAt(new Date());
             product.setUpdatedAt(new Date());
+
+            productRequest.getProductTypes().forEach(productTypeRequest -> {
+                inventory+=productTypeRequest.getQuantity();
+            });
+            product.setInventory(inventory);
             productRepository.save(product);
             productRequest.getProductTypes().forEach(productTypeRequest -> {
-                ProductType productType=new ProductType();
+                ProductType productType = new ProductType();
                 productType.setProduct(product);
                 productType.setName(productTypeRequest.getName());
-                productType.setImage(productTypeRequest.getImage());
+                if (productTypeRequest.getImage() != null) {
+                    productType.setImage(imageService.saveImage(productTypeRequest.getImage()));
+                }
                 productType.setPrice(productTypeRequest.getPrice());
                 productType.setQuantity(productTypeRequest.getQuantity());
                 productTypeRepository.save(productType);
@@ -88,10 +97,10 @@ public class ProductServiceImpl implements ProductService {
                     .message("Add Product Successful")
                     .build();
 
-        }catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             return ResponseObject.builder()
                     .code(400)
-                    .message("Add Product Error: "+e.getMessage())
+                    .message("Add Product Error: " + e.getMessage())
                     .build();
         }
     }
@@ -124,6 +133,9 @@ public class ProductServiceImpl implements ProductService {
             List<ProductType> productTypes=productTypeRepository.findByProduct_Id(id);
             productTypeRepository.deleteAll(productTypes);
             productRepository.delete(product.get());
+            Brand brand=brandRepository.findById(product.get().getBrand().getId()).get();
+            brand.setProductCount(brand.getProductCount()-1);
+            brandRepository.save(brand);
             return ResponseObject.builder()
                     .code(200)
                     .message("Delete Product Successful")
@@ -164,8 +176,8 @@ public class ProductServiceImpl implements ProductService {
             Product productUpdate = product.get();
             productUpdate.setName(!Objects.equals(productRequest.getName(), "") ? productRequest.getName() : productUpdate.getName());
             productUpdate.setDescription(!Objects.equals(productRequest.getDescription(), "") ? productRequest.getDescription() : productUpdate.getDescription());
+            productUpdate.setProvince(!Objects.equals(productRequest.getProvince(), "") ? productRequest.getProvince() : productUpdate.getProvince());
             productUpdate.setDiscount(productRequest.getDiscount() != productUpdate.getDiscount() ? productRequest.getDiscount() : productUpdate.getDiscount());
-            productUpdate.setInventory(productRequest.getInventory() != productUpdate.getInventory() ? productRequest.getInventory() : productUpdate.getInventory());
             Optional<Brand> brand = brandRepository.findById(productRequest.getBrand_id());
             if (brand.isEmpty()) {
                 return ResponseObject.builder()
@@ -198,7 +210,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ResponseObject getAllProduct(int category_id, String sort, int perPage, int currentPage) {
-        try{
+        try {
             Sort sorting;
             switch (sort) {
                 case "priceAsc":
@@ -232,15 +244,28 @@ public class ProductServiceImpl implements ProductService {
             } else {
                 pageable = PageRequest.of(currentPage - 1, perPage);
             }
-            ModelMapper modelMapper=new ModelMapper();
+            ModelMapper modelMapper = new ModelMapper();
             // Lấy trang sản phẩm
             Page<Product> productPage = new PageImpl<>(Collections.emptyList());
-            if (category_id==0) {
+            if (category_id == 0) {
                 productPage = productRepository.findAll(pageable);
-            }else if (category_id>0){
-                productPage = productRepository.findAllByCategoryId(category_id,pageable);
+            } else if (category_id > 0) {
+                productPage = productRepository.findAllByCategoryId(category_id, pageable);
             }
-            List<ProductDto> productDtoPage=productPage.stream().map(product -> modelMapper.map(product,ProductDto.class)).collect(Collectors.toList());
+            List<ProductDto> productResponses = new ArrayList<>();
+            productPage.forEach(product -> {
+                ProductDto products = new ProductDto();
+                products.setId(product.getId());
+                products.setName(product.getName());
+                products.setDiscount(product.getDiscount());
+                products.setSold(product.getSold());
+                products.setRate(product.getRate());
+                ProductType productTypes = productTypeRepository.findTopByProduct_IdOrderByPriceAscQuantityDesc(product.getId());
+                products.setImage(productTypes.getImage());
+                products.setPrice(productTypes.getPrice());
+                products.setProvince(product.getProvince());
+                productResponses.add(products);
+            });
             return ResponseObject.builder()
                     .code(200)
                     .message("Get All Product Successful")
@@ -249,18 +274,18 @@ public class ProductServiceImpl implements ProductService {
                             .current_page(currentPage)
                             .per_page(perPage)
                             .total_product(productPage.getTotalElements())
-                            .data(productDtoPage)
+                            .data(productResponses)
                             .build())
                     .build();
-        }catch (IllegalArgumentException e){
-            System.out.println("Get All Product Error: "+e.getMessage());
+        } catch (IllegalArgumentException e) {
+            System.out.println("Get All Product Error: " + e.getMessage());
             return null;
         }
     }
 
     @Override
     public ResponseObject getAllProduct(int brand_id, int seller_id, String sort, int perPage, int currentPage) {
-        try{
+        try {
             Sort sorting;
             switch (sort) {
                 case "priceAsc":
@@ -294,19 +319,32 @@ public class ProductServiceImpl implements ProductService {
             } else {
                 pageable = PageRequest.of(currentPage - 1, perPage);
             }
-            ModelMapper modelMapper=new ModelMapper();
+            ModelMapper modelMapper = new ModelMapper();
             // Lấy trang sản phẩm
             Page<Product> productPage = new PageImpl<>(Collections.emptyList());
-            if (brand_id==0 && seller_id==0) {
+            if (brand_id == 0 && seller_id == 0) {
                 productPage = productRepository.findAll(pageable);
-            }else if (brand_id>0 && seller_id==0){
-                productPage = productRepository.findAllByBrandId(brand_id,pageable);
-            }else if (brand_id==0 && seller_id>0){
-                productPage = productRepository.findAllBySellerId(seller_id,pageable);
-            }else if (brand_id>0 && seller_id>0){
-                productPage = productRepository.findAllByBrandIdAndSellerId(brand_id,seller_id,pageable);
+            } else if (brand_id > 0 && seller_id == 0) {
+                productPage = productRepository.findAllByBrandId(brand_id, pageable);
+            } else if (brand_id == 0 && seller_id > 0) {
+                productPage = productRepository.findAllBySellerId(seller_id, pageable);
+            } else if (brand_id > 0 && seller_id > 0) {
+                productPage = productRepository.findAllByBrandIdAndSellerId(brand_id, seller_id, pageable);
             }
-            List<ProductDto> productDtoPage=productPage.stream().map(product -> modelMapper.map(product,ProductDto.class)).collect(Collectors.toList());
+            List<ProductDto> productResponses = new ArrayList<>();
+            productPage.forEach(product -> {
+                ProductDto products = new ProductDto();
+                products.setId(product.getId());
+                products.setName(product.getName());
+                products.setDiscount(product.getDiscount());
+                products.setSold(product.getSold());
+                products.setRate(product.getRate());
+                ProductType productTypes = productTypeRepository.findTopByProduct_IdOrderByPriceAscQuantityDesc(product.getId());
+                products.setImage(productTypes.getImage());
+                products.setPrice(productTypes.getPrice());
+                products.setProvince(product.getProvince());
+                productResponses.add(products);
+            });
             return ResponseObject.builder()
                     .code(200)
                     .message("Get All Product Successful")
@@ -315,17 +353,16 @@ public class ProductServiceImpl implements ProductService {
                             .current_page(currentPage)
                             .per_page(perPage)
                             .total_product(productPage.getTotalElements())
-                            .data(productDtoPage)
+                            .data(productResponses)
                             .build())
                     .build();
-        }catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             return ResponseObject.builder()
                     .code(400)
-                    .message("Get All Product Error: "+e.getMessage())
+                    .message("Get All Product Error: " + e.getMessage())
                     .build();
         }
     }
-
 
     @Override
     public ResponseObject findProductById(int id) {
@@ -337,9 +374,9 @@ public class ProductServiceImpl implements ProductService {
                         .message("Product not found")
                         .build();
             }
-            Seller seller = sellerRepository.findById(id).get();
-            Brand brand = brandRepository.findById(id).get();
-            Category category = categoryRepository.findById(id).get();
+            Seller seller = product.get().getSeller();
+            Brand brand = product.get().getBrand();
+            Category category = product.get().getCategory();
             List<ProductType> productTypes=productTypeRepository.findByProduct_Id(id);
             return ResponseObject.builder()
                     .code(200)
@@ -388,15 +425,113 @@ public class ProductServiceImpl implements ProductService {
         }
     }
 
+    @Override
+    public ResponseObject findProductEditById(int id) {
+        try {
+            Optional<Product> product = productRepository.findById(id);
+            if (product.isEmpty()) {
+                return ResponseObject.builder()
+                        .code(400)
+                        .message("Product not found")
+                        .build();
+            }
+            Brand brand = product.get().getBrand();
+            Category category = product.get().getCategory();
+            return ResponseObject.builder()
+                    .code(200)
+                    .message("Get Product Successful")
+                    .data(ProductEditResponse.builder()
+                            .id(product.get().getId())
+                            .name(product.get().getName())
+                            .discount(product.get().getDiscount())
+                            .description(product.get().getDescription())
+                            .province(product.get().getProvince())
+                            .brand(BrandResponse.builder()
+                                    .id(brand.getId())
+                                    .name(brand.getName())
+                                    .image(brand.getImage())
+                                    .build())
+                            .category(CategoryResponse.builder()
+                                    .id(category.getId())
+                                    .name(category.getName())
+                                    .image(category.getImage())
+                                    .build())
+                            .build())
+
+                    .build();
+        } catch (IllegalArgumentException e) {
+            System.out.println("Get Product Error: " + e.getMessage());
+            return null;
+        }
+    }
+
 
     @Override
-    public ResponseObject get3ProductBestSellerForBrand(int brand_id) {
-        List<Product> products = productRepository.findTop3ByBrandIdOrderBySoldDesc(brand_id);
+    public ResponseObject getProductForSeller(int seller_id) {
+        List<Brand> brands = brandRepository.findAllByUserSellerId(seller_id);
+        List<BrandProductResponse> brandProductResponses = new ArrayList<>();
+        brands.forEach(brand -> {
+            BrandProductResponse brandProductResponse = new BrandProductResponse();
+            brandProductResponse.setId(brand.getId());
+            brandProductResponse.setName(brand.getName());
+            brandProductResponse.setImage(brand.getImage());
+            brandProductResponse.setTotal_product(brand.getProductCount());
+            brandProductResponse.setProducts(getProductDtoByBrand(brand.getId()));
+            brandProductResponses.add(brandProductResponse);
+        });
         return ResponseObject.builder()
                 .code(200)
-                .message("Get 3 Product Best Seller For Brand Successful")
-                .data(products.stream().map(product -> ProductBestSellerResponse.class).collect(Collectors.toList()))
+                .message("Get Product For Seller Successful")
+                .data(brandProductResponses)
                 .build();
+    }
+
+    @Override
+    public ResponseObject getProductForSeller() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User userSeller = userRepository.findUserByName(authentication.getName());
+        Optional<Seller> seller = sellerRepository.findByUserId(userSeller.getId());
+        if (seller.isEmpty()) {
+            return ResponseObject.builder()
+                    .code(400)
+                    .message("Seller not found")
+                    .build();
+        }
+        List<Brand> brands = brandRepository.findAllByUserSellerId(seller.get().getId());
+        List<BrandProductResponse> brandProductResponses = new ArrayList<>();
+        brands.forEach(brand -> {
+            BrandProductResponse brandProductResponse = new BrandProductResponse();
+            brandProductResponse.setId(brand.getId());
+            brandProductResponse.setName(brand.getName());
+            brandProductResponse.setImage(brand.getImage());
+            brandProductResponse.setTotal_product(brand.getProductCount());
+            brandProductResponse.setProducts(getProductDtoByBrand(brand.getId()));
+            brandProductResponses.add(brandProductResponse);
+        });
+        return ResponseObject.builder()
+                .code(200)
+                .message("Get Product For Seller Successful")
+                .data(brandProductResponses)
+                .build();
+    }
+
+    private List<ProductDto> getProductDtoByBrand(int brand_id) {
+        List<Product> products = productRepository.findAllByBrandId(brand_id);
+        List<ProductDto> productResponses = new ArrayList<>();
+        products.forEach(product -> {
+            ProductDto productDto = new ProductDto();
+            productDto.setId(product.getId());
+            productDto.setName(product.getName());
+            productDto.setDiscount(product.getDiscount());
+            productDto.setSold(product.getSold());
+            productDto.setRate(product.getRate());
+            ProductType productTypes = productTypeRepository.findTopByProduct_IdOrderByPriceAscQuantityDesc(product.getId());
+            productDto.setImage(productTypes.getImage());
+            productDto.setPrice(productTypes.getPrice());
+            productDto.setProvince(product.getProvince());
+            productResponses.add(productDto);
+        });
+        return productResponses;
     }
 
 

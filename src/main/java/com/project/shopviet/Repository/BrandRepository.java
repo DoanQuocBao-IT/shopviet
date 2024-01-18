@@ -12,5 +12,5 @@ import java.util.stream.Collectors;
 @Repository
 public interface BrandRepository extends JpaRepository<Brand,Integer> {
     Optional<Brand> findByIdAndUserSellerId(int id,int userSeller_id);
-
+    List<Brand> findAllByUserSellerId(int userSeller_id);
 }

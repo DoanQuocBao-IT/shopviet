@@ -11,8 +11,8 @@ public class ProductRequest {
     private int id;
     private String name;
     private String description;
+    private String province;
     private int discount;
-    private int inventory;
     private int brand_id;
     private int category_id;
     private List<ProductTypeRequest> productTypes;

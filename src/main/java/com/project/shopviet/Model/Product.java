@@ -41,6 +41,7 @@ public class Product {
     private int totalFeedback = 0;
     private int status = 1;
     private String reasonBlock;
+    private String province;
     @Override
     public String toString() {
         return " ID: " +id+
